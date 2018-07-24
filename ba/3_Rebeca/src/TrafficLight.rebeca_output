@@ -1,0 +1,19 @@
+<model-checking-report>
+<system-info>
+	<total-spent-time>0</total-spent-time>
+	<reached-states>11</reached-states>
+	<reached-transitions>12</reached-transitions>
+	<consumed-mem>616</consumed-mem>
+</system-info>
+<checked-property>
+	<type>LTL</type>
+	<name>System default property</name>
+	<result>satisfied</result>
+<options>
+	<option>Export state space</option>
+	<option>Nested DFS</option>
+</options>
+</checked-property>
+<counter-example-trace>
+</counter-example-trace>
+</model-checking-report>

@@ -1,0 +1,299 @@
+<transitionsystem>
+<state id="0" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">0</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">0</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">0</variable>
+		</statevariables>
+		<queue>
+			<message sender="tl">initial()</message>
+		</queue>
+	</rebec>
+</state>
+<state id="1" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">0</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">0</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+			<message sender="tl">on()</message>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">0</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+</state>
+<transition source="0" destination="1"> <messageserver sender="tl" owner="tl" title="INITIAL"/></transition>
+<state id="2" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">0</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">0</variable>
+		</statevariables>
+		<queue>
+			<message sender="r">update(2, 1)</message>
+		</queue>
+	</rebec>
+</state>
+<transition source="1" destination="2"> <messageserver sender="tl" owner="r" title="ON"/></transition>
+<state id="3" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">0</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+			<message sender="tl">on()</message>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+</state>
+<transition source="2" destination="3"> <messageserver sender="r" owner="tl" title="UPDATE"/></transition>
+<state id="4" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">1</variable>
+		</statevariables>
+		<queue>
+			<message sender="g">update(1, 1)</message>
+		</queue>
+	</rebec>
+</state>
+<transition source="3" destination="4"> <messageserver sender="tl" owner="g" title="ON"/></transition>
+<state id="5" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+			<message sender="tl">off()</message>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">2</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+</state>
+<transition source="4" destination="5"> <messageserver sender="g" owner="tl" title="UPDATE"/></transition>
+<state id="6" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">0</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">2</variable>
+		</statevariables>
+		<queue>
+			<message sender="r">update(2, 0)</message>
+		</queue>
+	</rebec>
+</state>
+<transition source="5" destination="6"> <messageserver sender="tl" owner="r" title="OFF"/></transition>
+<state id="7" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">0</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+			<message sender="tl">on()</message>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">3</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+</state>
+<transition source="6" destination="7"> <messageserver sender="r" owner="tl" title="UPDATE"/></transition>
+<state id="8" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">3</variable>
+		</statevariables>
+		<queue>
+			<message sender="r">update(2, 1)</message>
+		</queue>
+	</rebec>
+</state>
+<transition source="7" destination="8"> <messageserver sender="tl" owner="r" title="ON"/></transition>
+<state id="9" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+			<message sender="tl">off()</message>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">4</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+</state>
+<transition source="8" destination="9"> <messageserver sender="r" owner="tl" title="UPDATE"/></transition>
+<state id="10" atomicpropositions="" >
+	<rebec name="g">
+		<statevariables>
+			<variable name="on" type="byte">0</variable>
+			<variable name="color" type="byte">1</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="r">
+		<statevariables>
+			<variable name="on" type="byte">1</variable>
+			<variable name="color" type="byte">2</variable>
+		</statevariables>
+		<queue>
+		</queue>
+	</rebec>
+	<rebec name="tl">
+		<statevariables>
+			<variable name="state" type="byte">4</variable>
+		</statevariables>
+		<queue>
+			<message sender="g">update(1, 0)</message>
+		</queue>
+	</rebec>
+</state>
+<transition source="9" destination="10"> <messageserver sender="tl" owner="g" title="OFF"/></transition>
+<transition source="10" destination="3"> <messageserver sender="g" owner="tl" title="UPDATE"/></transition>
+</transitionsystem>

@@ -1,0 +1,24 @@
+digraph html {
+S0[label="S0:\n"];
+S1[label="S1:\n"];
+S0 -> S1[label="tl.INITIAL"];
+S2[label="S2:\n"];
+S1 -> S2[label="r.ON"];
+S3[label="S3:\n"];
+S2 -> S3[label="tl.UPDATE"];
+S4[label="S4:\n"];
+S3 -> S4[label="g.ON"];
+S5[label="S5:\n"];
+S4 -> S5[label="tl.UPDATE"];
+S6[label="S6:\n"];
+S5 -> S6[label="r.OFF"];
+S7[label="S7:\n"];
+S6 -> S7[label="tl.UPDATE"];
+S8[label="S8:\n"];
+S7 -> S8[label="r.ON"];
+S9[label="S9:\n"];
+S8 -> S9[label="tl.UPDATE"];
+S10[label="S10:\n"];
+S9 -> S10[label="g.OFF"];
+S10 -> S3[label="tl.UPDATE"];
+}

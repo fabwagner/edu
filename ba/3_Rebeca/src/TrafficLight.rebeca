@@ -1,0 +1,79 @@
+reactiveclass Light(2) {
+
+knownrebecs{TrafficLight tl;}
+statevars{byte on, color;}
+
+//1 = green
+//2 = red
+Light(byte c) {
+	color = c;
+	on = 0;
+}
+
+msgsrv on() {
+	if(sender == tl) {
+		on = 1;
+		tl.update(color, 1);
+	}
+}
+
+msgsrv off() {
+	if(sender == tl) {
+		on = 0;
+		tl.update(color, 0);
+	}
+}
+}
+
+
+reactiveclass TrafficLight(1) {
+
+knownrebecs {Light green, red;}
+statevars {byte state;}
+
+TrafficLight() {
+	state = 0;
+	self.initial();
+}
+
+msgsrv initial() {
+	red.on();
+}
+
+msgsrv update(byte color, byte on) {
+	if (state == 0) {
+		if(color == 2 && on == 1) {
+			state = 1;		
+			green.on();
+		}
+	}else if(state == 1) {
+		if(color == 1 && on == 1) {
+			state = 2;
+			red.off();
+		}
+	} else if(state == 2) {
+		if(color == 2 && on == 0) {
+			state = 3;
+			red.on();
+		}
+	} else if(state == 3) {
+		if(color == 2 && on == 1) {
+			state = 4;
+			green.off();
+		}
+	} else 	if(state == 4) {
+		if(color == 1 && on == 0) {
+			state = 1;
+			green.on();
+		}
+	}	
+}
+
+}
+
+
+main {
+	Light g(tl):(1);
+	Light r(tl):(2);
+	TrafficLight tl(g, r):();
+}
