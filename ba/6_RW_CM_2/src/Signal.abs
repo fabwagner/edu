@@ -1,0 +1,126 @@
+module Signal;
+export *;
+import * from Global;
+import * from Train;
+import * from TrackElement;
+
+interface Signal {
+        Unit notifyTrain();
+        Unit vorblock();
+        Unit rueckblock();
+	[Atomic]Unit forceSignal(Sig s);
+	[Atomic]Unit registerTrain(Train tr);
+	[Atomic]Unit construct(TrackElement track);
+}
+
+
+
+class SignalFreeWay implements Signal {
+	
+	TrackElement track = null;
+	Sig signal = RED;
+	Train train = null;
+	Int vorblock = 0;
+
+	[Atomic]Unit construct(TrackElement t) {
+		this.track = t;
+	}
+	
+	Unit notifyTrain() {
+		await train != null;
+		train.signalChanged(signal, track);
+		train = null;
+	}
+	
+	Unit vorblock() {
+		//TrackElement next = track.getNext();
+		vorblock = 1;
+		this.forceSignal(GREEN);	
+	}
+
+	Unit rueckblock() {
+		this.forceSignal(RED);
+		train = null;
+		vorblock = 0;
+	}
+	[Atomic]Unit forceSignal(Sig s) {
+		this.signal = s;
+		this!notifyTrain();
+	}
+	
+	[Atomic]Unit registerTrain(Train tr) {
+		this.train = tr;
+	}
+}
+
+
+class SignalAusfahrt implements Signal {
+	
+	Sig signal = RED;
+	Train train = null;
+	TrackElement track = null;
+	
+	[Atomic]Unit construct(TrackElement t) {
+		this.track = t;
+	}
+
+	[Atomic]Unit forceSignal(Sig s) {
+		this.signal = s;
+		this!notifyTrain();
+	}
+		
+	[Atomic]Unit registerTrain(Train tr) {
+		train = tr;
+	}
+	
+	Unit notifyTrain() {
+		if (train != null) {
+			train.signalChanged(signal, track);
+			train = null;
+		}
+	}
+	
+	Unit vorblock() {
+	}
+
+	Unit rueckblock() {
+	}
+
+}
+
+class SignalEinfahrt implements Signal {
+
+	Sig signal = RED;
+	TrackElement track = null;
+	Train train = null;
+		
+	[Atomic]Unit construct(TrackElement t) {
+		this.track = t;
+	}
+
+	[Atomic]Unit forceSignal(Sig s) {
+		this.signal = s;
+		this!notifyTrain();
+	}
+		
+	[Atomic]Unit registerTrain(Train tr) {
+		train = tr;
+	}
+	
+	Unit notifyTrain() {
+		if (train != null) {
+			train.signalChanged(signal, track);
+			train = null;
+		}
+	}
+	
+	
+	Unit vorblock() {
+
+	}
+
+	Unit rueckblock() {
+
+	}
+
+}

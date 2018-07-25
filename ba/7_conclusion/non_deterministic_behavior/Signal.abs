@@ -1,0 +1,113 @@
+interface Signal {
+        Unit notifyTrain();
+        Unit vorblock();
+        Unit rueckblock();
+	[Atomic]Unit forceSignal(Sig s);
+	[Atomic]Unit registerTrain(Train tr);
+	[Atomic]Unit construct(TrackElement t);
+}
+
+
+
+class SignalFreeWay implements Signal {
+	
+	TrackElement track = null;
+	Sig signal = RED;
+	Train train = null;
+	
+	[Atomic]Unit construct(TrackElement t) {
+		this.track = t;
+	}
+	
+	Unit notifyTrain() {
+		await train != null;
+		println("train no null");
+		train.signalChanged(signal, track);
+		train = null;
+	}
+	
+	Unit vorblock() {
+
+	}
+
+	Unit rueckblock() {
+
+	}
+	[Atomic]Unit forceSignal(Sig s) {
+		println("force signal freeway");
+		this.signal = s;
+		this!notifyTrain();
+	}
+	
+	[Atomic]Unit registerTrain(Train tr) {
+		this.train = tr;
+	}
+}
+
+
+class SignalAusfahrt implements Signal {
+	
+	Sig signal = RED;
+	Train train = null;
+	TrackElement track = null;
+
+	[Atomic]Unit construct(TrackElement t) {
+		this.track = t;
+	}
+
+	[Atomic]Unit forceSignal(Sig s) {
+		this.signal = s;
+		this!notifyTrain();
+	}
+		
+	[Atomic]Unit registerTrain(Train tr) {
+		train = tr;
+	}
+	
+	Unit notifyTrain() {
+		if (train != null) {
+			train.signalChanged(signal, track);
+			train = null;
+		}
+	}
+	
+	Unit vorblock() {
+
+	}
+
+	Unit rueckblock() {
+
+	}
+
+}
+
+class SignalEinfahrt implements Signal {
+
+
+	TrackElement track = null;
+		
+	[Atomic]Unit construct(TrackElement t) {
+		this.track = t;
+	}
+	
+	[Atomic]Unit forceSignal(Sig s) {
+
+	}
+		
+	[Atomic]Unit registerTrain(Train tr) {
+
+	}
+
+	Unit notifyTrain() {
+
+	}
+	
+	Unit vorblock() {
+
+	}
+
+	Unit rueckblock() {
+
+	}
+
+}

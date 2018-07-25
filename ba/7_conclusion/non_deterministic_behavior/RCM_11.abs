@@ -1,0 +1,672 @@
+module Run;
+
+data Sig = GREEN | RED | YELLOW;
+interface Signal {
+        Unit notifyTrain();
+        Unit vorblock();
+        Unit rueckblock();
+	[Atomic]Unit forceSignal(Sig s);
+	[Atomic]Unit registerTrain(Train tr);
+	[Atomic]Unit construct(TrackElement t);
+}
+
+
+
+class SignalFreeWay implements Signal {
+	
+	TrackElement track = null;
+
+	
+	[Atomic]Unit construct(TrackElement t) {
+		this.track = t;
+	}
+	
+	Unit notifyTrain() {
+
+	}
+	
+	Unit vorblock() {
+
+	}
+
+	Unit rueckblock() {
+
+	}
+	[Atomic]Unit forceSignal(Sig s) {
+
+	}
+	
+	[Atomic]Unit registerTrain(Train tr) {
+
+	}
+}
+
+
+class SignalAusfahrt implements Signal {
+	
+	Sig signal = RED;
+	Train train = null;
+	TrackElement track = null;
+
+	[Atomic]Unit construct(TrackElement t) {
+		this.track = t;
+	}
+
+	[Atomic]Unit forceSignal(Sig s) {
+		this.signal = s;
+		this!notifyTrain();
+	}
+		
+	[Atomic]Unit registerTrain(Train tr) {
+		train = tr;
+	}
+	
+	Unit notifyTrain() {
+		if (train != null) {
+			train.signalChanged(signal, track);
+			train = null;
+		}
+	}
+	
+	Unit vorblock() {
+
+	}
+
+	Unit rueckblock() {
+
+	}
+
+}
+
+class SignalEinfahrt implements Signal {
+
+
+	TrackElement track = null;
+		
+	[Atomic]Unit construct(TrackElement t) {
+		this.track = t;
+	}
+	
+	[Atomic]Unit forceSignal(Sig s) {
+
+	}
+		
+	[Atomic]Unit registerTrain(Train tr) {
+
+	}
+
+	Unit notifyTrain() {
+
+	}
+	
+	Unit vorblock() {
+
+	}
+
+	Unit rueckblock() {
+
+	}
+
+}
+data Stat = Gegenfahrschutz | Vorblock | OCCUPIED;
+data Ttype = Station | FreeWay | Pre;
+
+interface TrackElement {
+	Bool occupy(Train t, TrackElement p);
+	
+	[Atomic]Unit registerAusfahrt(Train tr);
+	Unit forceSignal(Int id, Sig s);
+	[Atomic] Unit registerTrain(Train tr, TrackElement p);
+	[Atomic]Ttype getType();
+	[Atomic]Bool construct(List<TrackElement> pre, List<Station> stations);	
+	[Atomic]Bool status(Stat s);
+
+}
+
+
+
+class TrackElementFreeWay() implements TrackElement {
+	
+	Train tr = null;
+	Signal s1 = null;
+	Signal s2 = null;
+	List<TrackElement> pre = Nil;
+	Bool gegenfahrschutz = False;
+	Bool occupied = False;
+
+
+	[Atomic]Ttype getType() {
+		return FreeWay;
+	}
+
+
+	[Atomic] Unit registerTrain(Train tr, TrackElement p) {
+		println("register train on a trackelement freewy");
+		println("a");	
+		if (p == null) {
+			println("te");
+			TrackElement t = nth(pre, 0);
+			if (t.getType() == Station) {
+				println("register train on signal 1");
+				s1.registerTrain(tr);	
+			} else {
+				s2.registerTrain(tr);
+				println("register train on signal 2");	
+			}
+		} else {
+			println("hahaha");
+			if (nth(pre, 0) == p) {
+				println("register train on signal 1");
+				s1.registerTrain(tr);
+			} else if (nth(pre, 1) == p) {
+				println("register trian on signal 2");
+				s2.registerTrain(tr);
+			}
+		}
+	}
+	[Atomic] Bool construct(List<TrackElement> pre, List<Station> stations) {
+		s1 = new SignalFreeWay();
+		s2 = new SignalFreeWay();
+		this.pre = pre;
+		return True;
+	}
+
+
+	[Atomic]Bool status(Stat s) {
+		Bool retVal = False;
+		if (s == Vorblock) {
+		}
+		return retVal;
+	}
+
+	[Atomic]Unit registerAusfahrt(Train tr) {
+	}
+	
+	Unit forceSignal(Int id, Sig s) {
+		if (id == 1) {
+			s1.forceSignal(s);
+		} else if (id == 2) {
+			s2.forceSignal(s);
+		}
+	}
+
+	Bool occupy(Train t, TrackElement p) {
+		
+		if (tr == null) {
+			TrackElement n = null;
+			if (p == nth(pre, 1)) {
+				n = nth(pre, 1);
+			} else
+ 			if (p == nth(pre, 2)) {
+				n = nth(pre, 2);
+			}
+
+		} else {
+			println("track already occupied");
+		}
+	
+		return False;	
+	}
+}
+
+
+
+class TrackElementStation() implements TrackElement {
+	Train tr = null;
+//	Signal s1 = null;
+//	Signal s2 = null;
+	List<TrackElement> pre = Nil;
+
+
+	[Atomic] Ttype getType() {
+		return Station;
+	}
+
+
+	[Atomic] Unit registerTrain(Train tr, TrackElement p) {
+		println("register train on a trackelement station");
+	}
+	[Atomic] Unit registerAusfahrt(Train tr) {
+	}
+	
+	Unit forceSignal(Int id, Sig s) {
+		/*if (id == 1) {
+			s1.forceSignal(s);
+		} else if (id == 2) {
+			s2.forceSignal(s);
+		}*/
+	}
+	[Atomic] Bool construct(List<TrackElement> pre, List<Station> stations) {
+//		s1 = new SignalAusfahrt();
+//		s2 = new SignalAusfahrt();
+		this.pre = pre;
+		return True;
+	}
+
+
+	[Atomic]Bool status(Stat s) {
+		return True;
+	}
+	Bool occupy(Train t, TrackElement p) {
+		Bool retVal = False;
+		return retVal;
+	}
+}
+
+
+
+class TrackElementPreStation() implements TrackElement {
+	Train train = null;
+
+	Signal s1 = null;
+	Signal s2 = null;
+	List<TrackElement> pre = Nil;
+	Bool gegenfahrschutz = False;
+
+
+	[Atomic] Unit registerAusfahrt(Train tr) {
+		s1.registerTrain(tr);
+	}
+
+	[Atomic] Unit registerTrain(Train tr, TrackElement p) {
+		println("register train on a track element pre station");
+	}
+
+	Unit forceSignal(Int id, Sig s) {
+		if (id == 1) {
+			s1.forceSignal(s);
+		} else if (id == 2) {
+			s2.forceSignal(s);
+		}
+	}
+	[Atomic]Ttype getType() {
+		return Pre;
+	}
+
+	[Atomic]Bool construct(List<TrackElement> pre, List<Station> stations) {
+		s1 = new SignalAusfahrt();
+		s2 = new SignalEinfahrt();
+
+		s1.construct(this);
+		s2.construct(this);
+		this.pre = pre;
+		return True;
+	}
+
+
+	[Atomic]Bool status(Stat s) {
+		Bool retVal = False;
+		if (s == Gegenfahrschutz) {
+			retVal = this.gegenfahrschutz;
+		}
+		
+		return retVal;
+	}
+	Bool occupy(Train tr, TrackElement p) {
+		if (p == null) { //Ausfahrt
+			TrackElement t = nth(pre, 0);
+			Ttype ttype = t.getType();
+			Int dir = 0;
+			if (ttype == Station) {
+				t = nth(pre, 1);
+				dir = 1;
+			}	
+						
+			print("hihi");
+			//TODO:	
+			tr.setNext(t);
+			t.registerTrain(tr, null);	
+			this!forceSignal(1, RED);	
+			t!forceSignal(dir, GREEN);
+		}
+		return True;
+	}
+}
+interface Train {
+        Bool registerInStation(Station st);
+	Unit start();
+        Unit signalChanged(Sig s, TrackElement t);
+	[Atomic]Unit setNext(TrackElement t);
+	Unit drive_out();
+	Unit run();
+	
+	[Atomic]Int getID();
+}
+
+
+
+class TrainImpl(Int id) implements Train {
+
+        Int state = -1;
+        Int debugLevel = 2;
+	Station station;
+	Bool start = False;
+	Bool s2 = False;
+	Bool nextSet = False;
+
+	TrackElement next = null;
+	TrackElement last = null;
+        
+
+	Bool registerInStation(Station st) {
+              	Bool retVal = False;
+		  if (debugLevel > 0) {
+                        print("Train ");
+                        print(toString(id));
+                        print(" register in Station ");
+			Int i = st.getID();	
+                        println(toString(i));
+		}
+
+		
+		Bool reg = await st!register(this);
+			
+		if (reg) {
+			this.station = st;
+			this.state = 0;
+		}
+       		retVal = reg;	        
+                return retVal;
+        }
+
+	[Atomic]Unit setNext(TrackElement n) {
+		println("set next");
+		this.last = this.next;
+		this.next = n;
+		this.nextSet = True;
+	}
+	Unit start() {
+		start = True;
+	}
+
+	Unit drive_out() {
+		state = 1;
+		println("drive out");
+		//this.run();
+	}
+	
+	Unit run() {
+		await start;
+		println("Train start!");
+	
+		if (state == 0) {
+			station!askDriveOut(this, 1);
+		} 
+		//else if (state == 1) {
+		//	println("station occupy");
+		//	state = 2;
+		//	await this.nextSet;	
+		//	this.nextSet = False;			
+		//	this.next!occupy(this, last);
+		//}
+		 else if (state == 1) {
+			println("look at signal");
+			this.next!occupy(this, last);
+			await nextSet;
+			nextSet = False;
+			
+		}
+	}
+
+        Unit signalChanged(Sig s, TrackElement t) {
+		if (s == GREEN) {
+			println("signal changed to green");
+			Ttype tt = t.getType();
+			if (tt == Pre)
+				println("pre");
+			if (tt == FreeWay)
+				println("freeway");
+			tt = this.next.getType();
+			if (tt == Pre)
+				println("pre");
+			if (tt == FreeWay)
+				println("freeway");
+
+			
+			if (t == this.next) {
+				this.run();
+			}
+		}
+        }
+
+
+	[Atomic] Int getID() {
+		return this.id;
+	}
+
+}
+
+
+interface Station extends TrackElement {
+        
+        Bool register(Train tr);
+
+	Unit anbieten(Train tr, Station fr);
+        Unit annehmen(Train tr);
+        Unit rueckmeldung();
+	Unit askDriveOut(Train tr, Int dir);
+//	Bool gegenfahrschutz(Station from);
+	[Atomic] Int getID();
+}
+
+
+class StationImpl(Int id, Int size) implements Station {
+	
+	Int nTrains = 0;
+	Train train = null;
+	TrackElement track = null;
+
+	List<TrackElement> pre = Nil;
+	List<Station> stations = Nil;
+	
+	Bool constructed = False;
+	Set<TrackElement> blocked = set[];
+	Map<Station, Train> waitFor = map[];
+	Map<Train, Int> trainDriveOut = map[];
+
+	Bool register(Train tr) {
+		Bool retVal = False;
+		if (nTrains < size) {
+			nTrains = nTrains + 1;
+			retVal = True;
+		}
+
+		return retVal;
+	}
+
+
+/*
+	Bool gegenfahrschutz(Station from) {
+		Bool retVal = False;
+		if (!contains(blocked, from)) {
+			retVal = True;
+			blocked = insertElement(blocked, from);
+		}
+		return retVal;
+	}*/
+
+	Unit anbieten(Train tr, Station fr) {
+		println("anbieten");
+		if (!contains(blocked, fr)) {
+			// gegenfahrschutz
+			blocked = insertElement(blocked, fr);
+			println("gegenfahrschutz activated");
+
+			//auf zug tr warten
+			Pair<Station, Train> p = Pair(fr, tr);	
+			waitFor = insert(waitFor, p);
+			println("send annehmen to ");
+			
+			fr!annehmen(tr);
+		}
+	}
+
+	Unit annehmen(Train tr) {
+		println("annehmen");
+		Maybe<Int> dir = lookup(trainDriveOut, tr);		
+		if (isJust(dir)) {
+			TrackElement t = nth(pre, fromJust(dir));
+			t.registerAusfahrt(tr);
+			tr.setNext(nth(pre, fromJust(dir)));	
+			tr.drive_out();
+			t!forceSignal(1, GREEN);
+		}
+	}
+
+	Unit rueckmeldung() {
+
+	}
+
+	Unit askDriveOut(Train tr, Int dir) {
+		await this.constructed;
+		print("ask drive out");
+		Pair<Train, Int> p = Pair(tr, dir);
+		trainDriveOut = insert(trainDriveOut, p);
+		nth(stations, dir)!anbieten(tr, this);
+		
+	}
+
+	[Atomic] Int getID(){
+		return id;
+	}
+
+
+	
+	[Atomic]Bool construct(List<TrackElement> pre, List<Station> stations) {
+		if (!this.constructed && length(pre) == length(stations)) {
+
+			track = new TrackElementStation();
+			this.stations = stations;
+			Int i = 0;
+			while (i < length(pre)) {
+				TrackElement t = new TrackElementPreStation();
+				t.construct(Cons(this, Cons(nth(pre, i), Nil)), Cons(this, Nil));
+
+				List<TrackElement> lot = Cons(t, Nil);
+				this.pre = concatenate(this.pre, lot);
+				i = i + 1;
+			}
+		
+			track.construct(pre, Nil);	
+
+			this.constructed = True;
+		}
+		return True;
+	}
+	
+
+	[Atomic]Unit registerAusfahrt(Train tr) {
+        	this.track.registerAusfahrt(tr);
+	}
+
+	[Atomic] Unit registerTrain(Train tr, TrackElement p) {
+		this.track.registerTrain(tr, p);
+	}
+
+        Unit forceSignal(Int id, Sig s) {
+                this.track!forceSignal(id, s);
+        }
+
+
+	[Atomic]Ttype getType() {
+		return Station;
+	}
+	
+	Bool occupy(Train tr, TrackElement p) {
+		print("test asdasd");
+		Bool retVal = False;
+		Maybe<Int> dir = lookup(trainDriveOut, tr);	
+		println("station occupy");	
+		if (isJust(dir)) {	
+			tr.setNext(nth(pre, fromJust(dir)));	
+			println("station track occupied");
+			retVal = True;
+		}
+		return retVal;
+	}
+
+	[Atomic]Bool status(Stat s) {
+		return track.status(s);
+	}
+
+}
+type ListStations = List<Station>;
+
+{
+Station s1 = new StationImpl(1, 3);
+Station s2 = new StationImpl(2, 3);
+Station s3 = new StationImpl(3, 3);
+
+Train tr1 = new TrainImpl(1);
+//Train tr2 = new TrainImpl(2);
+//Train tr3 = new TrainImpl(3);
+
+TrackElement t1 = new TrackElementFreeWay();
+TrackElement t2 = new TrackElementFreeWay();
+TrackElement t3 = new TrackElementFreeWay();
+TrackElement t4 = new TrackElementFreeWay();
+TrackElement t5 = new TrackElementFreeWay();
+TrackElement t6 = new TrackElementFreeWay();
+TrackElement t7 = new TrackElementFreeWay();
+TrackElement t8 = new TrackElementFreeWay();
+
+/*
+	Set up the tracks
+*/
+List<TrackElement> lot = Cons(t1, Cons(t5, Nil));
+List<Station> los = Cons(s2, Cons(s3, Nil));
+s1.construct(lot, los);
+
+lot = Cons(t4, Nil);
+los = Cons(s1, Nil);
+s2.construct(lot, los);
+
+lot = Cons(t8, Nil);
+los = Cons(s1, Nil);
+s3.construct(lot, los);
+
+los = Nil;
+lot = Cons(s1, Cons(t2, Nil));
+t1.construct(lot, los);
+
+lot = Cons(t1, Cons(t3, Nil));
+t2.construct(lot, los);
+
+lot = Cons(t2, Cons(t4, Nil));
+t3.construct(lot, los);
+
+lot = Cons(t3, Cons(s2, Nil));
+t4.construct(lot, los);
+
+lot = Cons(s1, Cons(t6, Nil));
+t5.construct(lot, los);
+
+lot = Cons(t5, Cons(t7, Nil));
+t6.construct(lot, los);
+
+lot = Cons(t6, Cons(t8, Nil));
+t7.construct(lot, los);
+
+lot = Cons(t7, Cons(s3, Nil));
+t8.construct(lot, los);	
+
+
+/*
+	End Set up
+*/
+
+Fut<Bool> reqStation1 = tr1!registerInStation(s1);
+//Fut<Bool> reqStation2 = tr2!registerInStation(s1);
+//Fut<Bool> reqStation3 = tr3!registerInStation(s1);
+
+await reqStation1?;
+//await reqStation1? & reqStation2? & reqStation3?;
+//Bool r1 = reqStation1.get;
+//Bool r2 = reqStation2.get;
+//Bool r3 = reqStation3.get;
+
+//assert r1 && r2 && r3; 
+
+tr1.start();
+}
+

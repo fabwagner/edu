@@ -1,0 +1,15 @@
+main {
+	StationController sc1(sc1, sc1, sc1, sc2, sp1, spr1, spr1, spr1, sp2):(2);
+	StationController sc2(sc2, sc1, sc2, sc2, sp4, spr2, sp3, spr2, spr2):(2);
+
+	SignalPair sp1(sc1, sp1, sp1):(1, 0);
+	SignalPair sp2(sc1, sp1, sp3):(0, 1);
+	SignalPair sp3(sc2, sp2, sp4):(0, 1);
+	SignalPair sp4(sc2, sp4, sp4):(1, 0);	
+	
+	//Routing tracks
+	SignalPair spr1(sc1, sp1, sp1):(-1, 0);
+	SignalPair spr2(sc2, sp4, sp4):(-1, 0);
+
+	Train tr(sc1):(101);
+}

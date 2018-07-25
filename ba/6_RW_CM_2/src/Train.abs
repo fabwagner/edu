@@ -1,0 +1,136 @@
+module Train;
+export *;
+import * from Global;
+import * from TrackElement;
+import * from Station;
+import * from Signal;
+
+
+interface Train {
+        Bool registerInStation(Station st);
+	Unit start();
+        Unit signalChanged(Sig s, TrackElement t);
+	Unit setNext(TrackElement t);
+	Unit setDriveIn(TrackElement t);
+	Unit drive_out();
+	Unit drive_in(Station st);
+	Unit run();
+	Unit setDriveInStation(Station st);	
+	[Atomic]Int getID();
+}
+
+
+
+class TrainImpl(Int id) implements Train {
+
+        Int state = -1;
+	Station station;
+	Station driveIn;
+	Bool start = False;
+	Bool s2 = False;
+	Bool nextSet = False;
+
+	TrackElement next = null;
+	TrackElement last = null;
+        
+
+	Bool registerInStation(Station st) {
+		String name = st.getName();
+		println("-> [" + toString(id)  + "].registerInStation(" + name + ")");
+
+              	Bool retVal = False;
+		Bool reg = await st!register(this);
+		if (reg) {
+			this.station = st;
+			this.state = 0;
+		} else {
+			println("Train could not be registered.");
+		}
+       		retVal = reg;	        
+                return retVal;
+        }
+
+	Unit setNext(TrackElement n) {
+		String name = n.getName();
+		println("-> [" + toString(id) + "].setNext(" + name + ")");
+
+		this.last = this.next;
+		this.next = n;
+		this.nextSet = True;
+	}
+
+	Unit setDriveInStation(Station st) {
+		String name = st.getName();
+		println("-> [" + toString(id) + "].setDriveInStation(" + name  +")");	
+		driveIn = st;
+	}
+
+	Unit setDriveIn(TrackElement t) {
+		String name = t.getName();
+		println("-> [" + toString(id) + "].setDriveIn(" + name  +")");
+		
+		this.last = this.next;
+		this.next = t;
+		state = 2;
+		this.nextSet = True;
+	}
+
+	Unit start() {
+		println("-> [" + toString(id) + "].start()" );
+		start = True;
+	}
+
+	Unit drive_out() {
+		println("-> [" + toString(id) + "].drive_out()" );
+		state = 1;
+	}
+
+	Unit drive_in(Station st) {
+		String name = st.getName();
+		println("-> [" + toString(id) + "].drive_in(" + name  + ")" );
+		
+		this.station = st;
+		this.last = null;
+		this.next = null;
+		this.nextSet = True;
+		this.state = 0;
+	}
+
+	Unit run() {
+		println("-> [" + toString(id) + "].run()");
+
+		await start;	
+		if (state == 0) {
+			station!askDriveOut(this, 0);
+		} 
+		 else if (state == 1) {
+			this.next!occupy(this, last);
+			await nextSet;
+			nextSet = False;
+		} else if (state == 2) {
+			driveIn.driveIn(this, station);		
+		}
+	}
+
+        Unit signalChanged(Sig s, TrackElement t) {
+		String name = t.getName();
+		String color = "GREEN";
+		if (s == RED)
+			color = "RED";
+		println("-> [" + toString(id) + "].signalChanged(" + name  + ", " + color + ")" );
+		
+		if (s == GREEN) {		
+			if (t == this.next) {
+				this.run();
+			}
+		}
+        }
+
+
+	[Atomic] Int getID() {
+		return this.id;
+	}
+
+}
+
+

@@ -1,0 +1,186 @@
+reactiveclass SignalPair(10) {
+
+knownrebecs { StationController sc; SignalPair t_prev, t_next;}
+statevars {byte signal, station, block, preStation; Train onTrack; SignalPair verschluss;}
+
+//signal = 1 -> green
+//signal = 0 -> red
+SignalPair(byte st, byte pre) 
+{
+	signal= 1;//green
+	onTrack = null;	
+	station = st;
+	block = 0;
+	preStation = pre;
+	if (preStation == 1) {
+		signal = 0;
+	}	
+	verschluss = null;
+}
+
+msgsrv gegenfahrschutz(Train tr) {
+	if (block == 0) {
+		block = 1;
+		verschluss = self;
+		signal = 0;
+		sc.annehmen(tr, self)after(1);
+	}
+}
+
+msgsrv free() {
+	if(sender == t_prev || sender == t_next) {
+		if (block == 0) {
+			onTrack = null;
+			signal = 1;
+			verschluss = null;
+		} else {
+			free();
+		}
+	}
+	if (preStation == 1 && sender == sc) {
+		block = 0;
+		verschluss = null;
+	}
+}
+
+msgsrv drive_out(Train tr) {
+	if (sender == sc) {
+		if (block == 0) {
+			block = 1;
+			signal = 1;
+			tr.drive();
+		} else {
+			sc.ask_for_drive_out(tr);
+		}
+	} else {
+		if(preStation == 1) {
+			if (signal == 1) {
+				tr.drive_out(self);
+			} else if (signal == 0) {
+				sc.ask_for_drive_out(tr);
+			}
+		}
+	}
+}
+
+msgsrv drive_in(Train tr, SignalPair prev) {
+	if (sender == sc) {
+		if (block == 0) {
+			signal = 1;
+			tr.drive();
+		} else {
+			sc.ask_for_drive_in(tr)after(1);
+		}
+	} else {
+		if (preStation == 1) {
+			if (prev != null)
+				prev.rueckblock();
+			if(signal == 1) {
+				sc.handle_drive_in(tr)after(1);
+				signal = 0;
+			} else
+			if (signal == 0) {
+				sc.ask_for_drive_in(tr)after(1);
+			}
+		}	
+	}
+}
+
+msgsrv vorblock() {
+	if (preStation == 1) {
+
+	} else {
+		if (sender == t_prev) {
+			block = 1;
+			signal = 1;
+			verschluss = t_prev;
+		}
+		if (sender == t_next) {
+			block = 1;
+			signal = 1;
+			verschluss = t_next;
+		}
+	}
+}
+
+msgsrv rueckblock() {
+	if (preStation == 1) {
+		block = 0;
+		verschluss = null;
+		signal = 0;
+	}else if (block == 1) {
+		block = 0;
+		signal = 1;
+		verschluss = null;
+	}
+}
+
+msgsrv set_green() {
+	if (block == 0 && sender == self) {
+		signal = 1;
+	} else {
+		if (sender == self) {
+			set_green();
+		}
+	}
+}
+
+msgsrv set_red() {
+	if (block == 0 && sender == self) {
+		signal = 0;
+	} else {
+		if (sender == self) {
+			set_red();
+		}
+	}
+	
+}
+
+
+msgsrv occupy(Train tr, SignalPair last) { 
+	byte dir = 0;
+	if (last == t_next) {
+		dir = 2;
+	}
+	if (last == t_prev) {
+		dir = 1;
+	}
+
+	if (signal == 1) {
+		if (preStation == 1) {
+			signal = 0;
+			if (dir == 1) {
+				t_next.vorblock();
+				tr.track_occupied(t_next);
+			} else
+			if (dir == 2) {
+				t_prev.vorblock();
+				tr.track_occupied(t_prev);
+			} 
+			sc.train_drove_out();
+		} else if (preStation == 0) {
+			if (verschluss == t_prev) {
+				signal = 0;
+				t_next.vorblock();
+				t_prev.rueckblock();
+				tr.track_occupied(t_next);
+			} else
+			if (verschluss == t_next) {
+				signal = 0;
+				t_prev.vorblock();
+				t_next.rueckblock();
+				tr.track_occupied(t_prev);
+			} else {
+				occupy(tr, last)after(3);
+			}
+		} else {
+			tr.drive();
+		}
+
+
+	} else {
+		tr.drive();
+	}
+}
+
+}

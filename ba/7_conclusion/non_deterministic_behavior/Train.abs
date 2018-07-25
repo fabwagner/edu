@@ -1,0 +1,116 @@
+interface Train {
+        Bool registerInStation(Station st);
+	Unit start();
+        Unit signalChanged(Sig s, TrackElement t);
+	[Atomic]Unit setNext(TrackElement t);
+	Unit drive_out();
+	Unit run();
+	
+	[Atomic]Int getID();
+}
+
+
+
+class TrainImpl(Int id) implements Train {
+
+        Int state = -1;
+        Int debugLevel = 2;
+	Station station;
+	Bool start = False;
+	Bool s2 = False;
+	Bool nextSet = False;
+
+	TrackElement next = null;
+	TrackElement last = null;
+        
+
+	Bool registerInStation(Station st) {
+              	Bool retVal = False;
+		  if (debugLevel > 0) {
+                        print("Train ");
+                        print(toString(id));
+                        print(" register in Station ");
+			Int i = st.getID();	
+                        println(toString(i));
+		}
+
+		
+		Bool reg = await st!register(this);
+			
+		if (reg) {
+			this.station = st;
+			this.state = 0;
+		}
+       		retVal = reg;	        
+                return retVal;
+        }
+
+	[Atomic]Unit setNext(TrackElement n) {
+		println("set next");
+		Ttype tt = n.getType();
+		this.last = this.next;
+		this.next = n;
+		this.nextSet = True;
+	}
+	Unit start() {
+		start = True;
+	}
+
+	Unit drive_out() {
+		state = 1;
+		println("drive out");
+		//this.run();
+	}
+	
+	Unit run() {
+		await start;
+		println("Train start!");
+	
+		if (state == 0) {
+			station!askDriveOut(this, 1);
+		} 
+		//else if (state == 1) {
+		//	println("station occupy");
+		//	state = 2;
+		//	await this.nextSet;	
+		//	this.nextSet = False;			
+		//	this.next!occupy(this, last);
+		//}
+		 else if (state == 1) {
+			println("look at signal");
+			this.next!occupy(this, last);
+			await nextSet;
+			nextSet = False;
+			
+		}
+	}
+
+        Unit signalChanged(Sig s, TrackElement t) {
+		if (s == GREEN) {
+			println("signal changed to green");
+			Ttype tt = t.getType();
+			if (tt == Pre)
+				println("pre");
+			if (tt == FreeWay)
+				println("freeway");
+			tt = this.next.getType();
+			if (tt == Pre)
+				println("pre");
+			if (tt == FreeWay)
+				println("freeway");
+
+			
+			if (t == this.next) {
+				this.run();
+			}
+		}
+        }
+
+
+	[Atomic] Int getID() {
+		return this.id;
+	}
+
+}
+
+

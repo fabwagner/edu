@@ -1,0 +1,86 @@
+module Run;
+import * from Global;
+import * from Station;
+import * from TrackElement;
+import * from Train;
+
+type ListStations = List<Station>;
+
+{
+Station s1 = new StationImpl(1, 3, "s1");
+Station s2 = new StationImpl(2, 3, "s2");
+Station s3 = new StationImpl(3, 3, "s3");
+
+Train tr1 = new TrainImpl(1);
+//Train tr2 = new TrainImpl(2);
+//Train tr3 = new TrainImpl(3);
+
+TrackElement t1 = new TrackElementFreeWay("t1");
+TrackElement t2 = new TrackElementFreeWay("t2");
+TrackElement t3 = new TrackElementFreeWay("t3");
+TrackElement t4 = new TrackElementFreeWay("t4");
+TrackElement t5 = new TrackElementFreeWay("t5");
+TrackElement t6 = new TrackElementFreeWay("t6");
+TrackElement t7 = new TrackElementFreeWay("t7");
+TrackElement t8 = new TrackElementFreeWay("t8");
+
+/*
+	Set up the tracks
+*/
+List<TrackElement> lot = Cons(t1, Cons(t5, Nil));
+List<Station> los = Cons(s2, Cons(s3, Nil));
+await s1!construct(lot, los);
+
+lot = Cons(t4, Nil);
+los = Cons(s1, Nil);
+await s2!construct(lot, los);
+
+lot = Cons(t8, Nil);
+los = Cons(s1, Nil);
+await s3!construct(lot, los);
+
+los = Nil;
+lot = Cons(s1, Cons(t2, Nil));
+await t1!construct(lot, los);
+
+lot = Cons(t1, Cons(t3, Nil));
+await t2!construct(lot, los);
+
+lot = Cons(t2, Cons(t4, Nil));
+await t3!construct(lot, los);
+
+lot = Cons(t3, Cons(s2, Nil));
+await t4!construct(lot, los);
+
+lot = Cons(s1, Cons(t6, Nil));
+await t5!construct(lot, los);
+
+lot = Cons(t5, Cons(t7, Nil));
+await t6!construct(lot, los);
+
+lot = Cons(t6, Cons(t8, Nil));
+await t7!construct(lot, los);
+
+lot = Cons(t7, Cons(s3, Nil));
+await t8!construct(lot, los);	
+
+
+/*
+	End Set up
+*/
+
+Fut<Bool> reqStation1 = tr1!registerInStation(s1);
+//Fut<Bool> reqStation2 = tr2!registerInStation(s1);
+//Fut<Bool> reqStation3 = tr3!registerInStation(s1);
+
+await reqStation1?;
+//await reqStation1? & reqStation2? & reqStation3?;
+//Bool r1 = reqStation1.get;
+//Bool r2 = reqStation2.get;
+//Bool r3 = reqStation3.get;
+
+//assert r1 && r2 && r3; 
+
+tr1.start();
+}
+

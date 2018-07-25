@@ -1,0 +1,19 @@
+main {
+
+	StationController sc_null(sc_null, sc_null, sc_null, sc_null, tn1, tn1, tn1, tn1, tn1):(-1, 1);
+	
+	StationController sc1(sc_null, sc_null, sc_null, sc2, t1, tn1, tn1, tn2, t2):(1, 2);
+	StationController sc2(sc_null, sc1, sc_null, sc_null, t4, tn2, t3, tn2, tn2):(2, 2);
+
+	SignalPair t1(sc1, t1, t1):(1, 0);
+	SignalPair t2(sc1, t1, t3):(0, 1);
+	SignalPair t3(sc2, t2, t4):(0, 1);
+	SignalPair t4(sc2, t4, t4):(1, 0);	
+	
+	//Routing tracks
+	SignalPair tn1(sc1, t1, t1):(-1, 0);
+	SignalPair tn2(sc2, t4, t4):(-1, 0);
+
+	Train tr1(sc1):(101);
+	Train tr2(sc2):(102);
+}

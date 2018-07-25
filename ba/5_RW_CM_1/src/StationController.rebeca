@@ -1,0 +1,396 @@
+reactiveclass StationController(10) {
+
+knownrebecs { StationController dest_s, dest_w, dest_n, dest_e; SignalPair t, pre_s, pre_w, pre_n, pre_e;}
+statevars {int nTrains, size, iid, anbieten_sent; byte debug; Train train, wait_for_e, wait_for_w, wait_for_n, wait_for_s;}
+
+StationController(int idd, int s) {
+	nTrains = 0;
+	size = s;	
+	iid = idd;	
+	wait_for_e = null;
+	wait_for_w = null;
+	wait_for_n = null;
+	wait_for_s = null;
+	anbieten_sent = 0;
+}
+
+msgsrv handle_drive_in(Train tr) {
+	if (tr == train) {
+		nTrains = nTrains + 1;
+		train = null;
+		tr.drive_in(self, t);
+	} else {
+		handle_drive_in(tr)after(3);
+	}
+		
+}
+
+msgsrv set_train(Train tr) {
+	if (nTrains < size) {
+		nTrains = nTrains + 1;
+		delay(1);
+		tr.ready(self, t);
+	} else {
+		set_train(tr);
+	}
+}
+
+msgsrv handle_drive_out(Train tr, byte dir) {
+	delay(2);
+	//handled train must be given train
+	//and wait_for_x must be null in given direction
+	if((train == null || train == tr) && (wait_for_s == null && dir == 1 || wait_for_w == null && dir == 2 || wait_for_n == null && dir == 3 || wait_for_e == null && dir == 4)) {
+		train = tr; // currently handeled train
+		if (dir == 1) {
+			anbieten_sent = 1;
+			dest_s.anbieten(tr);
+		} else
+		if (dir == 2) {
+			anbieten_sent = 2;
+			dest_w.anbieten(tr);
+		} else
+		if (dir == 3) {
+			anbieten_sent = 3;
+			dest_n.anbieten(tr);
+		} else
+		if (dir == 4) {
+			anbieten_sent = 4;
+			dest_e.anbieten(tr);
+		}
+		
+		nTrains = nTrains - 1;
+	} else {
+		StationController dest = null;
+		if (dir == 1) {
+			dest = dest_s;
+		} else
+		if (dir == 2) {
+			dest = dest_w;
+		} else
+		if (dir == 3) {
+			dest = dest_n;
+		} else
+		if (dir == 4) {
+			dest = dest_e;
+		}
+		check_status_for_drive_out(tr, dir);
+	}
+	
+}
+
+
+msgsrv anbieten(Train tr) {
+	delay(1);
+	int d = -1;
+	if (sender == dest_s) 
+		d = 1;
+	if (sender == dest_w)
+		d = 2;
+	if(sender == dest_n)
+		d = 3;
+	if (sender == dest_e)
+		d = 4;
+
+	if (train != null && anbieten_sent == d) { //opposite
+
+		d = (d - 2);
+		if (d == 0)
+			d = 4;
+		if (d == -1)
+			d = 3;
+	
+		if (d > anbieten_sent) { //priority
+			if (sender == dest_s || sender == pre_s) {
+				pre_s.gegenfahrschutz(tr);
+				wait_for_s = tr;
+				train = null;
+			} else if (sender == dest_w || sender == pre_w) {
+				pre_w.gegenfahrschutz(tr);
+				wait_for_w = tr;
+				train = null;
+			} else	if (sender == dest_n || sender == pre_n) {
+				pre_n.gegenfahrschutz(tr);
+				wait_for_n = tr;
+				train = null;	
+			} else 	if (sender == dest_e || sender == pre_e) {
+				pre_e.gegenfahrschutz(tr);
+				wait_for_e = tr;
+				train = null;
+			}
+		} else if (d == anbieten_sent) {
+			if (sender == dest_s || sender == pre_s) {
+				wait_for_s = tr;
+				train = null;
+			} else if (sender == dest_w || sender == pre_w) {
+				wait_for_w = tr;
+				train = null;
+			} else	if (sender == dest_n || sender == pre_n) {
+				wait_for_n = tr;
+				train = null;	
+			} else 	if (sender == dest_e || sender == pre_e) {
+				wait_for_e = tr;
+				train = null;
+			}
+		} 
+		else {
+			if (sender == dest_s)
+				dest_s.revert_anbieten();
+			else if (sender == dest_w)
+				dest_w.revert_anbieten();
+			else if (sender == dest_n)
+				dest_n.revert_anbieten();
+			else if (sender == dest_e)
+				dest_e.revert_anbieten();					
+		}
+	} else {
+		if (sender == dest_s || sender == pre_s) {
+			if (wait_for_s == null) {
+				pre_s.gegenfahrschutz(tr);
+				wait_for_s = tr;
+			} else {
+				wait_for_s = tr;
+				dest_s.annehmen(tr, pre_s);
+			}
+		} else if (sender == dest_w || sender == pre_w) {
+			if (wait_for_w == null) {
+				pre_w.gegenfahrschutz(tr);
+				wait_for_w = tr;
+			} else {
+				wait_for_w = tr;
+				dest_w.annehmen(tr, pre_w);
+			}
+		} else	if (sender == dest_n || sender == pre_n) {
+			if (wait_for_n == null) {
+				pre_n.gegenfahrschutz(tr);
+				wait_for_n = tr;
+			} else {
+				wait_for_n = tr;
+				dest_n.annehmen(tr, pre_n);
+			}	
+		} else 	if (sender == dest_e || sender == pre_e) {
+			if (wait_for_n == null) {
+				pre_e.gegenfahrschutz(tr);
+				wait_for_e = tr;
+			} else {
+				wait_for_e = tr;
+				dest_e.annehmen(tr, pre_e);
+			}
+		}
+	
+	}
+}
+
+msgsrv check_status(Train tr, StationController dest) {
+	if(sender == self) {
+		int check_after = 5;
+		if(dest == dest_s) {
+			if (wait_for_s == null && train == null) {
+				train = tr;
+				tr.drive();
+			} else {
+				check_status(tr, dest)after(check_after);
+			}
+		} else if (dest == dest_w) {
+			if (wait_for_w == null && train == null) {
+				train = tr;
+				tr.drive();
+			} else {
+				check_status(tr, dest)after(check_after);
+			}
+		} else 	if (dest == dest_n) {
+			if(wait_for_n == null && train == null) {
+				train = tr;
+				tr.drive();
+			} else {
+				check_status(tr, dest)after(check_after);
+			}
+		} else 	if (dest == dest_e) {
+			if (wait_for_e == null && train == null) {
+				train = tr;
+				tr.drive();
+			} else {
+				check_status(tr, dest)after(check_after);
+			}
+		}
+		
+	}
+}
+
+msgsrv check_status_for_drive_out(Train tr, byte dir) {
+	if(sender == self) {
+		int check_after = 3;
+		if (train == null) {
+			handle_drive_out(tr, dir);
+		} else {
+			check_status_for_drive_out(tr, dir)after(check_after);
+		}
+	}
+}
+
+
+msgsrv revert_anbieten() {
+	int check_after = 5;
+	if (anbieten_sent == 1) {
+		check_status(train, dest_s)after(check_after);
+	} else 
+	if (anbieten_sent == 2) {
+		check_status(train, dest_w)after(check_after);
+	} else 
+	if (anbieten_sent == 3) {
+		check_status(train, dest_n)after(check_after);
+	} else 
+	if (anbieten_sent == 4) {
+		check_status(train, dest_e)after(check_after);
+	}
+	anbieten_sent = 0;
+	train = null;
+}
+
+msgsrv annehmen(Train tr, SignalPair pre) {
+	if (sender == pre_w) {
+		dest_w.annehmen(tr, pre_w);
+	} else
+	if (sender == pre_e) {
+		dest_e.annehmen(tr, pre_e);
+	} else
+	if (sender == pre_n) {
+		dest_n.annehmen(tr, pre_n);
+	} else
+	if (sender == pre_s) {
+		dest_s.annehmen(tr, pre_s);
+	}
+
+	if (train == tr) {		
+		if (sender == dest_s && anbieten_sent == 1) {
+			//abmeldung
+			anbieten_sent = 0;
+			tr.handle_drive_out(pre_s, pre);
+		}
+		if (sender == dest_w && anbieten_sent == 2) {
+			//abmeldung
+			anbieten_sent = 0;
+			tr.handle_drive_out(pre_w, pre);
+		}
+		if (sender == dest_n && anbieten_sent == 3) {
+			//abmeldung
+			anbieten_sent = 0;
+			tr.handle_drive_out(pre_n, pre);
+		}
+		if (sender == dest_e && anbieten_sent == 4) {
+			//abmeldung
+			anbieten_sent = 0;
+			tr.handle_drive_out(pre_e, pre);
+		}
+	}
+}
+
+msgsrv ask_for_drive_out(Train tr) {
+	if (train == tr) {
+		if (sender == pre_e) {
+			pre_e.drive_out(tr);
+		} else
+
+		if (sender == pre_w) {
+			pre_w.drive_out(tr);
+		} else
+
+		if (sender == pre_n) {
+			pre_n.drive_out(tr);
+		} else
+
+		if (sender == pre_s) {
+			pre_s.drive_out(tr);
+		}
+	} else {
+		tr.drive()after(10);
+	}
+}
+
+msgsrv train_drove_out() {
+	delay(2);
+	train = null;
+}
+
+msgsrv rueckmeldung() {
+	if (sender == dest_s) {
+		pre_s.free();
+	} else
+	if(sender == dest_w) {
+		pre_w.free();
+	} else 
+	if (sender == dest_n) {
+		pre_n.free();
+	} else 
+	if (sender == dest_e) {
+		pre_e.free();
+	}
+}
+
+msgsrv ask_for_drive_in(Train tr) {
+	if (train == null || train == tr) {
+		train = tr;
+		if(sender == pre_e) {
+			if (tr == wait_for_e) {
+				wait_for_e = null;
+				dest_e.rueckmeldung();
+				pre_e.free();
+				delay(2);
+				pre_e.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			} else {
+				pre_e.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			}
+		}
+
+		if (sender == pre_w) {
+			if (tr == wait_for_w) {
+				wait_for_w = null;
+				dest_w.rueckmeldung();
+				pre_w.free();
+				delay(2);
+				pre_w.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			} else {
+				pre_w.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			}
+		}
+		if (sender == pre_n) {
+			if (tr == wait_for_n) {
+				wait_for_n = null;
+				dest_n.rueckmeldung();
+				pre_n.free();
+				delay(2);
+				pre_n.drive_in(tr, null)after(1);
+			} else {
+				pre_n.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			}
+		}
+
+		if (sender == pre_s) {
+			if (tr == wait_for_s) {
+				wait_for_s = null;
+				dest_s.rueckmeldung();
+				pre_s.free();
+				delay(2);
+				pre_s.drive_in(tr, null)after(1);
+			} else {
+				pre_s.drive_in(tr, null);
+				//tr.drive_in(self, t)after(1);		
+				nTrains = nTrains + 1;
+				train = null;
+			}
+		}
+	} else {
+		tr.drive();
+	}
+}
+}
+

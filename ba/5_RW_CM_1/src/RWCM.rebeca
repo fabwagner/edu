@@ -1,0 +1,795 @@
+reactiveclass SignalPair(10) {
+
+knownrebecs { StationController sc; SignalPair t_prev, t_next;}
+statevars {byte signal, station, block, preStation; Train onTrack; SignalPair verschluss;}
+
+//signal = 1 -> green
+//signal = 0 -> red
+SignalPair(byte st, byte pre) 
+{
+	signal= 1;//green
+	onTrack = null;	
+	station = st;
+	block = 0;
+	preStation = pre;
+	if (preStation == 1) {
+		signal = 0;
+	}	
+	verschluss = null;
+}
+
+msgsrv gegenfahrschutz(Train tr) {
+	if (block == 0) {
+		block = 1;
+		verschluss = self;
+		signal = 0;
+		sc.annehmen(tr, self)after(1);
+	}
+}
+
+msgsrv free() {
+	if(sender == t_prev || sender == t_next) {
+		if (block == 0) {
+			onTrack = null;
+			signal = 1;
+			verschluss = null;
+		} else {
+			free();
+		}
+	}
+	if (preStation == 1 && sender == sc) {
+		block = 0;
+		verschluss = null;
+	}
+}
+
+msgsrv drive_out(Train tr) {
+	if (sender == sc) {
+		if (block == 0) {
+			block = 1;
+			signal = 1;
+			tr.drive();
+		} else {
+			sc.ask_for_drive_out(tr);
+		}
+	} else {
+		if(preStation == 1) {
+			if (signal == 1) {
+				tr.drive_out(self);
+			} else if (signal == 0) {
+				sc.ask_for_drive_out(tr);
+			}
+		}
+	}
+}
+
+msgsrv drive_in(Train tr, SignalPair prev) {
+	if (sender == sc) {
+		if (block == 0) {
+			signal = 1;
+			tr.drive();
+		} else {
+			sc.ask_for_drive_in(tr)after(1);
+		}
+	} else {
+		if (preStation == 1) {
+			if (prev != null)
+				prev.rueckblock();
+			if(signal == 1) {
+				sc.handle_drive_in(tr)after(1);
+				signal = 0;
+			} else
+			if (signal == 0) {
+				sc.ask_for_drive_in(tr)after(1);
+			}
+		}	
+	}
+}
+
+msgsrv vorblock() {
+	if (preStation == 1) {
+
+	} else {
+		if (sender == t_prev) {
+			block = 1;
+			signal = 1;
+			verschluss = t_prev;
+		}
+		if (sender == t_next) {
+			block = 1;
+			signal = 1;
+			verschluss = t_next;
+		}
+	}
+}
+
+msgsrv rueckblock() {
+	if (preStation == 1) {
+		block = 0;
+		verschluss = null;
+		signal = 0;
+	}else if (block == 1) {
+		block = 0;
+		signal = 1;
+		verschluss = null;
+	}
+}
+
+msgsrv set_green() {
+	if (block == 0 && sender == self) {
+		signal = 1;
+	} else {
+		if (sender == self) {
+			set_green();
+		}
+	}
+}
+
+msgsrv set_red() {
+	if (block == 0 && sender == self) {
+		signal = 0;
+	} else {
+		if (sender == self) {
+			set_red();
+		}
+	}
+	
+}
+
+
+msgsrv occupy(Train tr, SignalPair last) { 
+	byte dir = 0;
+	if (last == t_next) {
+		dir = 2;
+	}
+	if (last == t_prev) {
+		dir = 1;
+	}
+
+	if (signal == 1) {
+		if (preStation == 1) {
+			signal = 0;
+			if (dir == 1) {
+				t_next.vorblock();
+				tr.track_occupied(t_next);
+			} else
+			if (dir == 2) {
+				t_prev.vorblock();
+				tr.track_occupied(t_prev);
+			} 
+			sc.train_drove_out();
+		} else if (preStation == 0) {
+			if (verschluss == t_prev) {
+				signal = 0;
+				t_next.vorblock();
+				t_prev.rueckblock();
+				tr.track_occupied(t_next);
+			} else
+			if (verschluss == t_next) {
+				signal = 0;
+				t_prev.vorblock();
+				t_next.rueckblock();
+				tr.track_occupied(t_prev);
+			} else {
+				occupy(tr, last)after(3);
+			}
+		} else {
+			tr.drive();
+		}
+
+
+	} else {
+		tr.drive();
+	}
+}
+
+}
+reactiveclass StationController(10) {
+
+knownrebecs { StationController dest_s, dest_w, dest_n, dest_e; SignalPair t, pre_s, pre_w, pre_n, pre_e;}
+statevars {int nTrains, size, iid, anbieten_sent; byte debug; Train train, wait_for_e, wait_for_w, wait_for_n, wait_for_s;}
+
+StationController(int idd, int s) {
+	nTrains = 0;
+	size = s;	
+	iid = idd;	
+	wait_for_e = null;
+	wait_for_w = null;
+	wait_for_n = null;
+	wait_for_s = null;
+	anbieten_sent = 0;
+}
+
+msgsrv handle_drive_in(Train tr) {
+	if (tr == train) {
+		nTrains = nTrains + 1;
+		train = null;
+		tr.drive_in(self, t);
+	} else {
+		handle_drive_in(tr)after(3);
+	}
+		
+}
+
+msgsrv set_train(Train tr) {
+	if (nTrains < size) {
+		nTrains = nTrains + 1;
+		delay(1);
+		tr.ready(self, t);
+	} else {
+		set_train(tr);
+	}
+}
+
+msgsrv handle_drive_out(Train tr, byte dir) {
+	delay(2);
+	//handled train must be given train
+	//and wait_for_x must be null in given direction
+	if((train == null || train == tr) && (wait_for_s == null && dir == 1 || wait_for_w == null && dir == 2 || wait_for_n == null && dir == 3 || wait_for_e == null && dir == 4)) {
+		train = tr; // currently handeled train
+		if (dir == 1) {
+			anbieten_sent = 1;
+			dest_s.anbieten(tr);
+		} else
+		if (dir == 2) {
+			anbieten_sent = 2;
+			dest_w.anbieten(tr);
+		} else
+		if (dir == 3) {
+			anbieten_sent = 3;
+			dest_n.anbieten(tr);
+		} else
+		if (dir == 4) {
+			anbieten_sent = 4;
+			dest_e.anbieten(tr);
+		}
+		
+		nTrains = nTrains - 1;
+	} else {
+		StationController dest = null;
+		if (dir == 1) {
+			dest = dest_s;
+		} else
+		if (dir == 2) {
+			dest = dest_w;
+		} else
+		if (dir == 3) {
+			dest = dest_n;
+		} else
+		if (dir == 4) {
+			dest = dest_e;
+		}
+		check_status_for_drive_out(tr, dir);
+	}
+	
+}
+
+
+msgsrv anbieten(Train tr) {
+	delay(1);
+	int d = -1;
+	if (sender == dest_s) 
+		d = 1;
+	if (sender == dest_w)
+		d = 2;
+	if(sender == dest_n)
+		d = 3;
+	if (sender == dest_e)
+		d = 4;
+
+	if (train != null && anbieten_sent == d) { //opposite
+
+		d = (d - 2);
+		if (d == 0)
+			d = 4;
+		if (d == -1)
+			d = 3;
+	
+		if (d > anbieten_sent) { //priority
+			if (sender == dest_s || sender == pre_s) {
+				pre_s.gegenfahrschutz(tr);
+				wait_for_s = tr;
+				train = null;
+			} else if (sender == dest_w || sender == pre_w) {
+				pre_w.gegenfahrschutz(tr);
+				wait_for_w = tr;
+				train = null;
+			} else	if (sender == dest_n || sender == pre_n) {
+				pre_n.gegenfahrschutz(tr);
+				wait_for_n = tr;
+				train = null;	
+			} else 	if (sender == dest_e || sender == pre_e) {
+				pre_e.gegenfahrschutz(tr);
+				wait_for_e = tr;
+				train = null;
+			}
+		} else if (d == anbieten_sent) {
+			if (sender == dest_s || sender == pre_s) {
+				wait_for_s = tr;
+				train = null;
+			} else if (sender == dest_w || sender == pre_w) {
+				wait_for_w = tr;
+				train = null;
+			} else	if (sender == dest_n || sender == pre_n) {
+				wait_for_n = tr;
+				train = null;	
+			} else 	if (sender == dest_e || sender == pre_e) {
+				wait_for_e = tr;
+				train = null;
+			}
+		} 
+		else {
+			if (sender == dest_s)
+				dest_s.revert_anbieten();
+			else if (sender == dest_w)
+				dest_w.revert_anbieten();
+			else if (sender == dest_n)
+				dest_n.revert_anbieten();
+			else if (sender == dest_e)
+				dest_e.revert_anbieten();					
+		}
+	} else {
+		if (sender == dest_s || sender == pre_s) {
+			if (wait_for_s == null) {
+				pre_s.gegenfahrschutz(tr);
+				wait_for_s = tr;
+			} else {
+				wait_for_s = tr;
+				dest_s.annehmen(tr, pre_s);
+			}
+		} else if (sender == dest_w || sender == pre_w) {
+			if (wait_for_w == null) {
+				pre_w.gegenfahrschutz(tr);
+				wait_for_w = tr;
+			} else {
+				wait_for_w = tr;
+				dest_w.annehmen(tr, pre_w);
+			}
+		} else	if (sender == dest_n || sender == pre_n) {
+			if (wait_for_n == null) {
+				pre_n.gegenfahrschutz(tr);
+				wait_for_n = tr;
+			} else {
+				wait_for_n = tr;
+				dest_n.annehmen(tr, pre_n);
+			}	
+		} else 	if (sender == dest_e || sender == pre_e) {
+			if (wait_for_n == null) {
+				pre_e.gegenfahrschutz(tr);
+				wait_for_e = tr;
+			} else {
+				wait_for_e = tr;
+				dest_e.annehmen(tr, pre_e);
+			}
+		}
+	
+	}
+}
+
+msgsrv check_status(Train tr, StationController dest) {
+	if(sender == self) {
+		int check_after = 5;
+		if(dest == dest_s) {
+			if (wait_for_s == null && train == null) {
+				train = tr;
+				tr.drive();
+			} else {
+				check_status(tr, dest)after(check_after);
+			}
+		} else if (dest == dest_w) {
+			if (wait_for_w == null && train == null) {
+				train = tr;
+				tr.drive();
+			} else {
+				check_status(tr, dest)after(check_after);
+			}
+		} else 	if (dest == dest_n) {
+			if(wait_for_n == null && train == null) {
+				train = tr;
+				tr.drive();
+			} else {
+				check_status(tr, dest)after(check_after);
+			}
+		} else 	if (dest == dest_e) {
+			if (wait_for_e == null && train == null) {
+				train = tr;
+				tr.drive();
+			} else {
+				check_status(tr, dest)after(check_after);
+			}
+		}
+		
+	}
+}
+
+msgsrv check_status_for_drive_out(Train tr, byte dir) {
+	if(sender == self) {
+		int check_after = 3;
+		if (train == null) {
+			handle_drive_out(tr, dir);
+		} else {
+			check_status_for_drive_out(tr, dir)after(check_after);
+		}
+	}
+}
+
+
+msgsrv revert_anbieten() {
+	int check_after = 5;
+	if (anbieten_sent == 1) {
+		check_status(train, dest_s)after(check_after);
+	} else 
+	if (anbieten_sent == 2) {
+		check_status(train, dest_w)after(check_after);
+	} else 
+	if (anbieten_sent == 3) {
+		check_status(train, dest_n)after(check_after);
+	} else 
+	if (anbieten_sent == 4) {
+		check_status(train, dest_e)after(check_after);
+	}
+	anbieten_sent = 0;
+	train = null;
+}
+
+msgsrv annehmen(Train tr, SignalPair pre) {
+	if (sender == pre_w) {
+		dest_w.annehmen(tr, pre_w);
+	} else
+	if (sender == pre_e) {
+		dest_e.annehmen(tr, pre_e);
+	} else
+	if (sender == pre_n) {
+		dest_n.annehmen(tr, pre_n);
+	} else
+	if (sender == pre_s) {
+		dest_s.annehmen(tr, pre_s);
+	}
+
+	if (train == tr) {		
+		if (sender == dest_s && anbieten_sent == 1) {
+			//abmeldung
+			anbieten_sent = 0;
+			tr.handle_drive_out(pre_s, pre);
+		}
+		if (sender == dest_w && anbieten_sent == 2) {
+			//abmeldung
+			anbieten_sent = 0;
+			tr.handle_drive_out(pre_w, pre);
+		}
+		if (sender == dest_n && anbieten_sent == 3) {
+			//abmeldung
+			anbieten_sent = 0;
+			tr.handle_drive_out(pre_n, pre);
+		}
+		if (sender == dest_e && anbieten_sent == 4) {
+			//abmeldung
+			anbieten_sent = 0;
+			tr.handle_drive_out(pre_e, pre);
+		}
+	}
+}
+
+msgsrv ask_for_drive_out(Train tr) {
+	if (train == tr) {
+		if (sender == pre_e) {
+			pre_e.drive_out(tr);
+		} else
+
+		if (sender == pre_w) {
+			pre_w.drive_out(tr);
+		} else
+
+		if (sender == pre_n) {
+			pre_n.drive_out(tr);
+		} else
+
+		if (sender == pre_s) {
+			pre_s.drive_out(tr);
+		}
+	} else {
+		tr.drive()after(10);
+	}
+}
+
+msgsrv train_drove_out() {
+	delay(2);
+	train = null;
+}
+
+msgsrv rueckmeldung() {
+	if (sender == dest_s) {
+		pre_s.free();
+	} else
+	if(sender == dest_w) {
+		pre_w.free();
+	} else 
+	if (sender == dest_n) {
+		pre_n.free();
+	} else 
+	if (sender == dest_e) {
+		pre_e.free();
+	}
+}
+
+msgsrv ask_for_drive_in(Train tr) {
+	if (train == null || train == tr) {
+		train = tr;
+		if(sender == pre_e) {
+			if (tr == wait_for_e) {
+				wait_for_e = null;
+				dest_e.rueckmeldung();
+				pre_e.free();
+				delay(2);
+				pre_e.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			} else {
+				pre_e.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			}
+		}
+
+		if (sender == pre_w) {
+			if (tr == wait_for_w) {
+				wait_for_w = null;
+				dest_w.rueckmeldung();
+				pre_w.free();
+				delay(2);
+				pre_w.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			} else {
+				pre_w.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			}
+		}
+		if (sender == pre_n) {
+			if (tr == wait_for_n) {
+				wait_for_n = null;
+				dest_n.rueckmeldung();
+				pre_n.free();
+				delay(2);
+				pre_n.drive_in(tr, null)after(1);
+			} else {
+				pre_n.drive_in(tr, null)after(1);
+				nTrains = nTrains + 1;
+				train = null;
+			}
+		}
+
+		if (sender == pre_s) {
+			if (tr == wait_for_s) {
+				wait_for_s = null;
+				dest_s.rueckmeldung();
+				pre_s.free();
+				delay(2);
+				pre_s.drive_in(tr, null)after(1);
+			} else {
+				pre_s.drive_in(tr, null);
+				//tr.drive_in(self, t)after(1);		
+				nTrains = nTrains + 1;
+				train = null;
+			}
+		}
+	} else {
+		tr.drive();
+	}
+}
+}
+
+reactiveclass Train(10) {
+knownrebecs {StationController homeStation;}
+statevars {StationController station; SignalPair track, next, dest; int counter, s; byte id, drive_status; byte[10] schedule;}
+
+Train(byte iid) {
+	id = iid;
+	drive_status = 0;
+	station = null;
+	next = null;
+	dest = null;
+	track = null;
+	counter = 0;
+	s = 0;
+	if (id == 1) {
+		schedule[0] = 1;
+		schedule[1] = 3;
+		schedule[2] = 1;
+		schedule[3] = 4;
+		schedule[4] = 3;
+		schedule[5] = 2;
+		schedule[6] = 1;
+		schedule[7] = 4;
+		schedule[8] = 4;
+		schedule[9] = 3;
+	} else if (id == 2) {
+		schedule[0] = 1;
+		schedule[1] = 3;
+		schedule[2] = 1;
+		schedule[3] = 4;
+		schedule[4] = 3;
+		schedule[5] = 2;
+		schedule[6] = 1;
+		schedule[7] = 4;
+		schedule[8] = 4;
+		schedule[9] = 3;
+
+	} else if (id == 101) {
+		schedule[0] = 4;
+		schedule[1] = 2;
+		schedule[2] = 4;
+		schedule[3] = 2;
+		schedule[4] = 4;
+		schedule[5] = 2;
+		schedule[6] = 4;
+		schedule[7] = 2;
+		schedule[8] = 4;
+		schedule[9] = 2;
+	
+	}  else if (id == 102) {
+		schedule[0] = 2;
+		schedule[1] = 4;
+		schedule[2] = 2;
+		schedule[3] = 4;
+		schedule[4] = 2;
+		schedule[5] = 4;
+		schedule[6] = 2;
+		schedule[7] = 4;
+		schedule[8] = 2;
+		schedule[9] = 4;
+	
+	} else {
+		schedule[0] = 3;
+		schedule[1] = 3;
+		schedule[2] = 3;
+		schedule[3] = 3;
+		schedule[4] = 3;
+		schedule[5] = 3;
+		schedule[6] = 3;
+		schedule[7] = 3;
+		schedule[8] = 3;
+		schedule[9] = 3;
+	}
+	initial();
+}
+
+msgsrv initial() {	
+	homeStation.set_train(self);
+}
+
+msgsrv drive() {
+	//add this during development
+	//if (counter < 15) {
+		delay(3);
+		if(drive_status == 1) {
+			station.handle_drive_out(self, schedule[s]);
+			
+			//schedule[s] = 0;
+		} 
+		if (drive_status == 2) {	
+			next.drive_out(self);
+			//schedule[s] = 0;
+		}
+		
+		if (drive_status == 3) {
+			next.occupy(self, track);
+		}
+		
+		if (drive_status == 4) {
+			next.drive_in(self, track);
+		}
+	//}
+}
+msgsrv track_occupied(SignalPair n) {
+	track = next;
+	next = n;
+	if(next == dest && drive_status == 3) {
+		drive_status = 4;
+	} 
+	drive();
+}
+
+msgsrv red_signal() {
+	drive();
+}
+
+
+msgsrv ready(StationController sc, SignalPair t) {
+	track = t;
+	station = sc;
+	drive_status = 1;
+	next = null;	
+	dest = null;
+	delay(10);
+	if (s < 1 || (id == 1 && s < 2)) {
+	//	if (id == 101)
+		drive();
+	}	
+}
+
+msgsrv handle_drive_out(SignalPair n, SignalPair d) {
+	if (drive_status == 1) {
+		next = n;
+		dest = d;
+		drive_status = 2;
+		schedule[s] = 0;
+		s = s + 1;
+		drive();
+	}
+}
+
+msgsrv drive_in(StationController sc, SignalPair t) {
+	if(drive_status == 4) {
+		next = null;
+		dest = null;
+		ready(sc, t)after(1);
+	}
+
+}
+
+msgsrv drive_out(SignalPair n) {
+	if (drive_status == 2) {
+		next = n;
+		drive_status = 3;
+		drive();
+	}
+
+}
+
+}
+main {	
+	StationController sc1(sc6, sc1, sc1, sc2, t1, t33, tn1, tn1, t2):(1, 3);
+	StationController sc2(sc5, sc1, sc2, sc3, t8, t24, t7, tn2, t9):(2, 2);
+	StationController sc3(sc4, sc2, sc3, sc3, t12, t13, t11, tn3, tn3):(3, 1);
+	StationController sc4(sc4, sc5, sc3 ,sc4, t16, tn4, t17, t15, tn4):(4, 4);
+	StationController sc5(sc5, sc6, sc2, sc4, t20, tn5, t25, t21, t19):(5, 3);
+	StationController sc6(sc6, sc6, sc1, sc5, t30, tn6, tn6, t31, t29):(6, 2);
+
+	
+	SignalPair t1(sc1, t1, t1):(1, 0);
+	SignalPair t2(sc1, t1, t3):(0, 1);
+	SignalPair t3(sc1, t2, t4):(0, 0);
+	SignalPair t4(sc1, t3, t5):(0, 0);
+	SignalPair t5(sc1, t4, t6):(0, 0);
+	SignalPair t6(sc2, t5, t7):(0, 0);
+	SignalPair t7(sc2, t6, t8):(0, 1);
+	SignalPair t8(sc2, t8, t8):(1, 0);
+	SignalPair t9(sc2, t8, t10):(0, 1);
+	SignalPair t10(sc3, t9, t11):(0, 0);
+	SignalPair t11(sc3, t10, t12):(0, 1);
+	SignalPair t12(sc3, t12, t12):(1, 0);
+	SignalPair t13(sc3, t12, t14):(0, 1);
+	SignalPair t14(sc3, t13, t15):(0, 0);
+	SignalPair t15(sc4, t14, t16):(0, 1);
+	SignalPair t16(sc4, t16, t16):(1, 0);
+	SignalPair t17(sc4, t16, t18):(0, 1);
+	SignalPair t18(sc4, t17, t19):(0, 0);
+	SignalPair t19(sc5, t18, t20):(0, 1);
+	SignalPair t20(sc5, t20, t20):(1, 0);
+	SignalPair t21(sc5, t20, t22):(0, 1);
+	SignalPair t22(sc5, t21, t23):(0, 0);
+	SignalPair t23(sc5, t22, t24):(0, 0);
+	SignalPair t24(sc2, t23, t8):(0, 1);
+	SignalPair t25(sc5, t20, t26):(0, 1);
+	SignalPair t26(sc5, t25, t27):(0, 0);
+	SignalPair t27(sc5, t26, t28):(0, 0);
+	SignalPair t28(sc6, t27, t29):(0, 0);
+	SignalPair t29(sc6, t28, t30):(0, 1);
+	SignalPair t30(sc6, t30, t30):(1, 0);
+	SignalPair t31(sc6, t30, t32):(0, 1);
+	SignalPair t32(sc6, t31, t33):(0, 0);
+	SignalPair t33(sc1, t32, t1):(0, 1);
+
+	
+	SignalPair tn1(sc1, t1, t1):(-1, 0);
+	SignalPair tn2(sc2, t8, t8):(-1, 0);
+	SignalPair tn3(sc3, t12, t12):(-1, 0);
+	SignalPair tn4(sc4, t16, t16):(-1, 0);
+	SignalPair tn5(sc5, t20, t20):(-1, 0);
+	SignalPair tn6(sc6, t30, t30):(-1, 0);
+
+	Train tr1(sc1):(1);	
+	Train tr2(sc1):(2);
+}

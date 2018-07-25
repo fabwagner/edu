@@ -1,0 +1,4 @@
+module Run;
+
+data Sig = GREEN | RED | YELLOW;
+		

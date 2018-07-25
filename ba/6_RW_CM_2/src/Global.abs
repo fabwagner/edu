@@ -1,0 +1,6 @@
+module Global;
+export *;
+
+data Sig = GREEN | RED | YELLOW;
+
+		

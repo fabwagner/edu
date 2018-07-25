@@ -1,0 +1,159 @@
+reactiveclass Train(10) {
+knownrebecs {StationController homeStation;}
+statevars {StationController station; SignalPair track, next, dest; int counter, s; byte id, drive_status; byte[10] schedule;}
+
+Train(byte iid) {
+	id = iid;
+	drive_status = 0;
+	station = null;
+	next = null;
+	dest = null;
+	track = null;
+	counter = 0;
+	s = 0;
+	if (id == 1) {
+		schedule[0] = 1;
+		schedule[1] = 3;
+		schedule[2] = 1;
+		schedule[3] = 4;
+		schedule[4] = 3;
+		schedule[5] = 2;
+		schedule[6] = 1;
+		schedule[7] = 4;
+		schedule[8] = 4;
+		schedule[9] = 3;
+	} else if (id == 2) {
+		schedule[0] = 1;
+		schedule[1] = 3;
+		schedule[2] = 1;
+		schedule[3] = 4;
+		schedule[4] = 3;
+		schedule[5] = 2;
+		schedule[6] = 1;
+		schedule[7] = 4;
+		schedule[8] = 4;
+		schedule[9] = 3;
+
+	} else if (id == 101) {
+		schedule[0] = 4;
+		schedule[1] = 2;
+		schedule[2] = 4;
+		schedule[3] = 2;
+		schedule[4] = 4;
+		schedule[5] = 2;
+		schedule[6] = 4;
+		schedule[7] = 2;
+		schedule[8] = 4;
+		schedule[9] = 2;
+	
+	}  else if (id == 102) {
+		schedule[0] = 2;
+		schedule[1] = 4;
+		schedule[2] = 2;
+		schedule[3] = 4;
+		schedule[4] = 2;
+		schedule[5] = 4;
+		schedule[6] = 2;
+		schedule[7] = 4;
+		schedule[8] = 2;
+		schedule[9] = 4;
+	
+	} else {
+		schedule[0] = 3;
+		schedule[1] = 3;
+		schedule[2] = 3;
+		schedule[3] = 3;
+		schedule[4] = 3;
+		schedule[5] = 3;
+		schedule[6] = 3;
+		schedule[7] = 3;
+		schedule[8] = 3;
+		schedule[9] = 3;
+	}
+	initial();
+}
+
+msgsrv initial() {	
+	homeStation.set_train(self);
+}
+
+msgsrv drive() {
+	//add this during development
+	//if (counter < 15) {
+		delay(3);
+		if(drive_status == 1) {
+			station.handle_drive_out(self, schedule[s]);
+			
+			//schedule[s] = 0;
+		} 
+		if (drive_status == 2) {	
+			next.drive_out(self);
+			//schedule[s] = 0;
+		}
+		
+		if (drive_status == 3) {
+			next.occupy(self, track);
+		}
+		
+		if (drive_status == 4) {
+			next.drive_in(self, track);
+		}
+	//}
+}
+msgsrv track_occupied(SignalPair n) {
+	track = next;
+	next = n;
+	if(next == dest && drive_status == 3) {
+		drive_status = 4;
+	} 
+	drive();
+}
+
+msgsrv red_signal() {
+	drive();
+}
+
+
+msgsrv ready(StationController sc, SignalPair t) {
+	track = t;
+	station = sc;
+	drive_status = 1;
+	next = null;	
+	dest = null;
+	delay(10);
+	if (s < 1 || (id == 1 && s < 2)) {
+	//	if (id == 101)
+		drive();
+	}	
+}
+
+msgsrv handle_drive_out(SignalPair n, SignalPair d) {
+	if (drive_status == 1) {
+		next = n;
+		dest = d;
+		drive_status = 2;
+		schedule[s] = 0;
+		s = s + 1;
+		drive();
+	}
+}
+
+msgsrv drive_in(StationController sc, SignalPair t) {
+	if(drive_status == 4) {
+		next = null;
+		dest = null;
+		ready(sc, t)after(1);
+	}
+
+}
+
+msgsrv drive_out(SignalPair n) {
+	if (drive_status == 2) {
+		next = n;
+		drive_status = 3;
+		drive();
+	}
+
+}
+
+}

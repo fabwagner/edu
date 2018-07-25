@@ -1,0 +1,204 @@
+module Station;
+export *;
+
+import * from Global;
+import * from TrackElement;
+import * from Signal;
+import * from Train;
+
+
+interface Station extends TrackElement {
+        
+        Bool register(Train tr);
+
+	Bool anbieten(Train tr, Station fr);
+        Unit rueckmeldung(Station fr);
+	Unit askDriveOut(Train tr, Int dir);
+	Bool askDriveIn(Train tr);
+	Unit driveIn(Train tr, Station st);
+	[Atomic] Int getID();
+}
+
+
+class StationImpl(Int id, Int size, String name) implements Station {
+	
+	Int nTrains = 0;
+	Train train = null;
+	TrackElement track = null;
+
+	List<TrackElement> pre = Nil;
+	List<Station> stations = Nil;
+	
+	Bool constructed = False;
+	Set<TrackElement> blocked = set[];
+	Map<Station, Train> waitFor = map[];
+	Map<Train, Int> trainDriveOut = map[];
+
+	Bool register(Train tr) {
+		Int iid = tr.getID();
+		println("-> [" + name + "].register(" + toString(iid) + ")" );
+
+		Bool retVal = False;
+		if (nTrains < size) {
+			nTrains = nTrains + 1;
+			retVal = True;
+		}
+
+		return retVal;
+	}
+
+
+	Bool anbieten(Train tr, Station fr) {
+		Int iid = tr.getID();
+		String na = fr.getName();
+		println("-> [" + name + "].anbieten(" + toString(iid)  + ", " + na  + ")" );
+
+		Bool retVal = False;
+		if (!contains(blocked, fr)) {
+			// gegenfahrschutz
+			blocked = insertElement(blocked, fr);
+			println("gegenfahrschutz activated");
+
+			//wait for tr
+			Pair<Station, Train> p = Pair(fr, tr);	
+			waitFor = insert(waitFor, p);
+			retVal = True;
+		}
+		return retVal;
+	}
+
+	Unit rueckmeldung(Station fr) {
+		println("-> [" + name + "].rueckmeldung()" );
+
+		//remove gegenfahrschutz
+	 	//blocked = remove<Station>(blocked, fr);
+	}
+
+	Unit askDriveOut(Train tr, Int dir) {
+		Int iid = tr.getID();
+		println("-> [" + name + "].askDriveOut(" + toString(iid)  + ", " + toString(dir)  + ")" );
+		
+	Bool answer = await nth(stations, dir)!anbieten(tr, this);			
+		if (answer) {
+			println("     ->annehmen");	
+			nTrains = nTrains - 1;
+			TrackElement t = nth(pre, dir);
+			t.registerDriveOut(tr);
+			tr.setNext(t);
+			tr.drive_out();
+			t!forceSignal(0, GREEN);
+		}
+	}
+
+	Bool askDriveIn(Train tr) {
+		Int iid = tr.getID();
+		println("-> [" + name + "].askDriveIn(" + toString(iid)  + ")" );
+
+		Bool retVal = False;
+		if (nTrains < size) {
+			nTrains = nTrains + 1;
+			retVal = True;
+		}
+		return retVal;
+	}
+
+	[Atomic] Int getID(){
+		return id;
+	}
+
+	Unit driveIn(Train tr, Station fr) {
+		Int iid = 1;//tr.getID();
+		String na = fr.getName();
+		println("-> [" + name + "].driveIn(" + toString(iid)  + ", " + na  + ")" );
+
+		fr!rueckmeldung(this);
+		tr.drive_in(this);
+	}
+	
+	Bool construct(List<TrackElement> pre, List<Station> stations) {
+		println("-> [" + name + "].construct(...)" );
+
+		if (!this.constructed && length(pre) == length(stations)) {
+			String str = "Station " + name;
+			track = new TrackElementStation(str);
+			this.stations = stations;
+			Int i = 0;
+			while (i < length(pre)) {
+				str = "Pre from: " + name + " " + toString(i);
+				TrackElement t = new TrackElementPreStation(str);
+				await t!construct(Cons(this, Cons(nth(pre, i), Nil)), Cons(this, Nil));
+				
+				TrackElement pt = nth(pre, i);
+				pt.forceSet(t, -1);
+				
+				List<TrackElement> lot = Cons(t, Nil);
+				this.pre = concatenate(this.pre, lot);
+				i = i + 1;
+			}
+		
+			await track!construct(pre, Nil);	
+
+			this.constructed = True;
+		}
+		return True;
+	}
+	
+
+
+	Unit forceSet(TrackElement t, Int id) {
+
+	}
+
+	[Atomic]Unit registerDriveOut(Train tr) {
+        	this.track.registerDriveOut(tr);
+	}
+
+	Int registerTrain(Train tr, TrackElement p) {
+		Int retVal = this.track.registerTrain(tr, p);
+		return retVal;
+	}
+
+        Unit forceSignal(Int id, Sig s) {
+                this.track!forceSignal(id, s);
+        }
+
+	Unit printName() {	
+		println("TrackElement Station");
+		println(name);
+	}
+
+	String getName() {
+		return name;
+	}	
+	Ttype getType() {
+		return Station;
+	}
+	
+	Signal getSignal(Int id) {
+		Signal retVal = this.track.getSignal(id);
+		return retVal;
+	}
+
+	TrackElement getTrackElement(Int id) {
+		TrackElement retVal = this.track.getTrackElement(id);
+		return retVal;
+	}
+	Bool occupy(Train tr, TrackElement p) {
+		Int iid = tr.getID();
+		String na = p.getName();
+		println("-> [" + name + "].occupy(" + toString(iid)  + ", " + na  + ")" );
+
+		Bool retVal = False;
+		Maybe<Int> dir = lookup(trainDriveOut, tr);	
+		if (isJust(dir)) {	
+			tr.setNext(nth(pre, fromJust(dir)));	
+			retVal = True;
+		}
+		return retVal;
+	}
+
+
+	Unit drive_in(Train tr) {
+		//dest.rueckmeldung(this);
+	}
+}

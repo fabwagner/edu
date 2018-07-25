@@ -1,0 +1,230 @@
+2018-07-25 15:28:19,582 - Log4JLogChute initialized using file 'velocity.log'
+2018-07-25 15:28:19,583 - Initializing Velocity, Calling init()...
+2018-07-25 15:28:19,583 - Starting Apache Velocity v1.7 (compiled: 2010-11-19 12:14:37)
+2018-07-25 15:28:19,583 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-07-25 15:28:19,583 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-07-25 15:28:19,583 - Target log system for org.apache.velocity.runtime.log.AvalonLogChute is not available (java.lang.NoClassDefFoundError: org/apache/log/format/Formatter).  Falling back to next log system...
+2018-07-25 15:28:19,583 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-07-25 15:28:19,583 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-07-25 15:28:19,585 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,596 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl) with class java.util.Collections$SynchronizedMap cache map.
+2018-07-25 15:28:19,598 - Loaded System Directive: org.apache.velocity.runtime.directive.Stop
+2018-07-25 15:28:19,599 - Loaded System Directive: org.apache.velocity.runtime.directive.Define
+2018-07-25 15:28:19,599 - Loaded System Directive: org.apache.velocity.runtime.directive.Break
+2018-07-25 15:28:19,600 - Loaded System Directive: org.apache.velocity.runtime.directive.Evaluate
+2018-07-25 15:28:19,601 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-07-25 15:28:19,602 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-07-25 15:28:19,603 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-07-25 15:28:19,605 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-07-25 15:28:19,606 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-07-25 15:28:19,634 - Created '20' parsers.
+2018-07-25 15:28:19,637 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-07-25 15:28:19,638 - Could not load resource 'VM_global_library.vm' from ResourceLoader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader: ClasspathResourceLoader Error: cannot find resource VM_global_library.vm
+2018-07-25 15:28:19,638 - Velocimacro : Default library not found.
+2018-07-25 15:28:19,638 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-07-25 15:28:19,638 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-07-25 15:28:19,638 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-07-25 15:28:19,638 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-07-25 15:28:19,670 - Velocimacro : added VM applyPatch: source=vtl/common/Macros.vm
+2018-07-25 15:28:19,670 - Velocimacro : added VM putParametersValues: source=vtl/common/Macros.vm
+2018-07-25 15:28:19,670 - Velocimacro : added VM putParameters: source=vtl/common/Macros.vm
+2018-07-25 15:28:19,671 - Velocimacro : added VM retrieveBooleanValuation: source=vtl/common/Macros.vm
+2018-07-25 15:28:19,672 - Velocimacro : added VM retrieveListFromArray: source=vtl/common/Macros.vm
+2018-07-25 15:28:19,673 - Velocimacro : added VM putBooleanValuation: source=vtl/common/Macros.vm
+2018-07-25 15:28:19,675 - Velocimacro : added VM putListToArray: source=vtl/common/Macros.vm
+2018-07-25 15:28:19,675 - ResourceManager : found vtl/common/Macros.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,682 - ResourceManager : found vtl/common/MainCPPTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,685 - Velocimacro : added VM mainMacroPutAdditionalIncludes: source=vtl/corerebeca/MainPatch.vm
+2018-07-25 15:28:19,685 - Velocimacro : added VM mainMacroPutInstanceReference: source=vtl/corerebeca/MainPatch.vm
+2018-07-25 15:28:19,685 - Velocimacro : added VM mainMacroPutAdditionalCommandOptions: source=vtl/corerebeca/MainPatch.vm
+2018-07-25 15:28:19,685 - Velocimacro : added VM mainMacroPutAnalyzerAllocation: source=vtl/corerebeca/MainPatch.vm
+2018-07-25 15:28:19,685 - ResourceManager : found vtl/corerebeca/MainPatch.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,694 - ResourceManager : found vtl/common/CommandLineParserHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,695 - ResourceManager : found vtl/common/CommandLineParserCPPTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,696 - ResourceManager : found vtl/common/TypesHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,698 - ResourceManager : found vtl/common/ConfigHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,699 - Velocimacro : added VM addDefinitions: source=vtl/corerebeca/ConfigPatchTemplate.vm
+2018-07-25 15:28:19,699 - ResourceManager : found vtl/corerebeca/ConfigPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,700 - ResourceManager : found vtl/common/AbstractActorHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,702 - Velocimacro : added VM coreRebecaStorableAdditionalDeclarations: source=vtl/common/StorableActorPatchTemplate.vm
+2018-07-25 15:28:19,703 - Velocimacro : added VM coreRebecaStorableAdditionalInitializations: source=vtl/common/StorableActorPatchTemplate.vm
+2018-07-25 15:28:19,703 - Velocimacro : added VM coreRebecaStorableAdditionalInitializationParameters: source=vtl/common/StorableActorPatchTemplate.vm
+2018-07-25 15:28:19,703 - Velocimacro : added VM coreRebecaStorableAdditionalSignatures: source=vtl/common/StorableActorPatchTemplate.vm
+2018-07-25 15:28:19,703 - Velocimacro : added VM coreRebecaStorableAdditionalBodies: source=vtl/common/StorableActorPatchTemplate.vm
+2018-07-25 15:28:19,703 - ResourceManager : found vtl/common/StorableActorPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,704 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,705 - VM #coreRebecaStorableAdditionalDeclarations: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,706 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,706 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,707 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,707 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,707 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,707 - ResourceManager : found vtl/common/StorableActorPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,707 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,709 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,709 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,709 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,709 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,709 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,709 - ResourceManager : found vtl/common/StorableActorPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,709 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,709 - VM #coreRebecaStorableAdditionalSignatures: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,711 - ResourceManager : found vtl/common/AbstractActorCPPTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,713 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,713 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,713 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,713 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,713 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,713 - ResourceManager : found vtl/common/StorableActorPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,714 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,714 - Left side ($maxParamLength) of '!=' operation has null value. If it is a reference, it may not be in the context or its toString() returned null. vtl/common/AbstractActorCPPTemplate.vm[line 60, column 27]
+2018-07-25 15:28:19,716 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,716 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,716 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,716 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,716 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,716 - ResourceManager : found vtl/common/StorableActorPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,716 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,716 - VM #coreRebecaStorableAdditionalInitializations: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,718 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,718 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,718 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,718 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,718 - Velocimacro : VM addition rejected : coreRebecaStorableAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,718 - ResourceManager : found vtl/common/StorableActorPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,718 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,718 - VM #coreRebecaStorableAdditionalBodies: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,729 - ResourceManager : found vtl/common/ReactiveClassHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,736 - Velocimacro : VM addition rejected : applyPatch : inline not allowed to replace existing VM
+2018-07-25 15:28:19,736 - Velocimacro : VM addition rejected : putParametersValues : inline not allowed to replace existing VM
+2018-07-25 15:28:19,737 - Velocimacro : VM addition rejected : putParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,737 - Velocimacro : VM addition rejected : retrieveBooleanValuation : inline not allowed to replace existing VM
+2018-07-25 15:28:19,738 - Velocimacro : VM addition rejected : retrieveListFromArray : inline not allowed to replace existing VM
+2018-07-25 15:28:19,739 - Velocimacro : VM addition rejected : putBooleanValuation : inline not allowed to replace existing VM
+2018-07-25 15:28:19,740 - Velocimacro : VM addition rejected : putListToArray : inline not allowed to replace existing VM
+2018-07-25 15:28:19,740 - ResourceManager : found /vtl/common/Macros.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,749 - Velocimacro : added VM coreRebecaReactiveClassAdditionalDeclarations: source=vtl/common/StorableReactiveClassPatchTemplate.vm
+2018-07-25 15:28:19,749 - Velocimacro : added VM coreRebecaReactiveClassAdditionalInitializationParameters: source=vtl/common/StorableReactiveClassPatchTemplate.vm
+2018-07-25 15:28:19,749 - Velocimacro : added VM coreRebecaReactiveClassAdditionalInitializations: source=vtl/common/StorableReactiveClassPatchTemplate.vm
+2018-07-25 15:28:19,749 - Velocimacro : added VM coreRebecaReactiveClassAdditionalSignatures: source=vtl/common/StorableReactiveClassPatchTemplate.vm
+2018-07-25 15:28:19,749 - Velocimacro : added VM coreRebecaReactiveClassAdditionalBodies: source=vtl/common/StorableReactiveClassPatchTemplate.vm
+2018-07-25 15:28:19,749 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,750 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,760 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,761 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,761 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,761 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,761 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,761 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,761 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,761 - VM #coreRebecaReactiveClassAdditionalSignatures: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,769 - ResourceManager : found vtl/common/ReactiveClassCPPTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,772 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,772 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,772 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,773 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,773 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,773 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,773 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,774 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,774 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,774 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,774 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,774 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,774 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,775 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,776 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,776 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,776 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,776 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,776 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,776 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,777 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,777 - VM #coreRebecaReactiveClassAdditionalInitializations: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,785 - RHS of #set statement is null. Context will not be modified. vtl/common/ReactiveClassCPPTemplate.vm[line 266, column 9]
+2018-07-25 15:28:19,785 - RHS of #set statement is null. Context will not be modified. vtl/common/ReactiveClassCPPTemplate.vm[line 266, column 9]
+2018-07-25 15:28:19,787 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,787 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,787 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,787 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,787 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,787 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,787 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,787 - VM #coreRebecaReactiveClassAdditionalBodies: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,791 - ResourceManager : found vtl/common/ReactiveClassHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,796 - Velocimacro : VM addition rejected : applyPatch : inline not allowed to replace existing VM
+2018-07-25 15:28:19,796 - Velocimacro : VM addition rejected : putParametersValues : inline not allowed to replace existing VM
+2018-07-25 15:28:19,796 - Velocimacro : VM addition rejected : putParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,797 - Velocimacro : VM addition rejected : retrieveBooleanValuation : inline not allowed to replace existing VM
+2018-07-25 15:28:19,797 - Velocimacro : VM addition rejected : retrieveListFromArray : inline not allowed to replace existing VM
+2018-07-25 15:28:19,798 - Velocimacro : VM addition rejected : putBooleanValuation : inline not allowed to replace existing VM
+2018-07-25 15:28:19,799 - Velocimacro : VM addition rejected : putListToArray : inline not allowed to replace existing VM
+2018-07-25 15:28:19,799 - ResourceManager : found /vtl/common/Macros.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,800 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,800 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,801 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,801 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,801 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,801 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,801 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,804 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,804 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,804 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,804 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,804 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,804 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,804 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,805 - VM #coreRebecaReactiveClassAdditionalSignatures: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,812 - ResourceManager : found vtl/common/ReactiveClassCPPTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,815 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,815 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,815 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,815 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,815 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,815 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,815 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,816 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,816 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,816 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,817 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,817 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,817 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,817 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,818 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,818 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,818 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,818 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,818 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,819 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,819 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,819 - VM #coreRebecaReactiveClassAdditionalInitializations: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,824 - RHS of #set statement is null. Context will not be modified. vtl/common/ReactiveClassCPPTemplate.vm[line 266, column 9]
+2018-07-25 15:28:19,825 - RHS of #set statement is null. Context will not be modified. vtl/common/ReactiveClassCPPTemplate.vm[line 266, column 9]
+2018-07-25 15:28:19,826 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalDeclarations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,826 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializationParameters : inline not allowed to replace existing VM
+2018-07-25 15:28:19,827 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalInitializations : inline not allowed to replace existing VM
+2018-07-25 15:28:19,827 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,827 - Velocimacro : VM addition rejected : coreRebecaReactiveClassAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,827 - ResourceManager : found vtl/common/StorableReactiveClassPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,827 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,827 - VM #coreRebecaReactiveClassAdditionalBodies: too few arguments to macro. Wanted 1 got 0
+2018-07-25 15:28:19,832 - ResourceManager : found vtl/corerebeca/analyzer/CoreRebecaDFSHashmapHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,835 - ResourceManager : found vtl/corerebeca/analyzer/CoreRebecaDFSHashmapCPPTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,840 - ResourceManager : found vtl/corerebeca/analyzer/AbstractCoreRebecaAnalyzerHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,843 - Velocimacro : added VM putDefinitionSignatures: source=/vtl/common/AtomicPropositionsDefinitionTemplate.vm
+2018-07-25 15:28:19,843 - Velocimacro : added VM putDefinitionBodies: source=/vtl/common/AtomicPropositionsDefinitionTemplate.vm
+2018-07-25 15:28:19,843 - Velocimacro : added VM putAtomicPropositions: source=/vtl/common/AtomicPropositionsDefinitionTemplate.vm
+2018-07-25 15:28:19,843 - ResourceManager : found /vtl/common/AtomicPropositionsDefinitionTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,847 - ResourceManager : found vtl/corerebeca/analyzer/AbstractCoreRebecaAnalyzerCPPTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,851 - ResourceManager : found vtl/common/AbstractModelCheckerHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,853 - ResourceManager : found vtl/common/AbstractModelCheckerCPPTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,854 - ResourceManager : found vtl/corerebeca/analyzer/CoreRebecaModelCheckerHeaderTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,859 - Velocimacro : added VM coreRebecaDFSAdditionalSignatures: source=vtl/corerebeca/analyzer/DFSPatchTemplate.vm
+2018-07-25 15:28:19,860 - Velocimacro : added VM coreRebecaDFSAdditionalBodies: source=vtl/corerebeca/analyzer/DFSPatchTemplate.vm
+2018-07-25 15:28:19,860 - ResourceManager : found vtl/corerebeca/analyzer/DFSPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,861 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).
+2018-07-25 15:28:19,862 - ResourceManager : found vtl/corerebeca/analyzer/CoreRebecaModelCheckerCPPTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,867 - Velocimacro : VM addition rejected : coreRebecaDFSAdditionalSignatures : inline not allowed to replace existing VM
+2018-07-25 15:28:19,868 - Velocimacro : VM addition rejected : coreRebecaDFSAdditionalBodies : inline not allowed to replace existing VM
+2018-07-25 15:28:19,868 - ResourceManager : found vtl/corerebeca/analyzer/DFSPatchTemplate.vm with loader org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+2018-07-25 15:28:19,868 - No class specified for #evaluate() context, so #set calls will now alter the global context and no longer be local.  This is a change from earlier versions due to VELOCITY-704.  If you need references within #evaluate to stay local, please use the automatically provided $evaluate namespace instead (e.g. #set($evaluate.foo = 'bar') and $evaluate.foo).

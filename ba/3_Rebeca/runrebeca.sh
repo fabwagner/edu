@@ -10,7 +10,7 @@ echo $sourcee
 
 	echo 'write c++ files...'
 
-echo 	java -jar $rmc -v 2.1 -s $sourcee -e $2 -p $4 -o rmc -x -t $5
+echo 	java -jar $rmc -s $sourcee -e $2 -o rmc -x
 	java -jar $rmc -s $sourcee -e $2 -o rmc -x
 
 	echo 'compile c++...'

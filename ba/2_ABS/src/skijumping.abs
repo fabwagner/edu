@@ -1,0 +1,136 @@
+module Skijumping;
+
+
+interface RefereeService {
+	Unit init(Int id);
+	Bool grantJumpPermission(AthleteService athlete);
+	Int giveFeedback();
+}
+
+
+interface AthleteService {
+	Bool requestJumpPermission(List<RefereeService> referee);
+	Bool jump();
+	Unit receiveGrade(Int rid, Int grade);
+	Int cheers();
+}
+
+class RefereeImpl implements RefereeService {
+	
+	Int rid = -1;
+	AthleteService currentA = null;
+	
+  	Unit init(Int id) {
+      		rid = id;
+    	}
+    
+  	Bool grantJumpPermission(AthleteService athlete) {
+  		Bool returnValue = (currentA == null);
+   		     if (returnValue) {
+  				currentA = athlete;
+  			}
+  		return returnValue;
+  	}
+
+  	Int giveFeedback() {
+  		currentA!receiveGrade(rid, 15);
+ 		currentA = null;
+  		return 15;
+  	}
+	
+}
+
+class AthleteImpl implements AthleteService {
+
+	Bool permitted = False;
+	Int grade = 0;
+	List<RefereeService> referees = Nil;
+	List<Int> feedback = Nil;
+	Int received_grades = 0;
+
+	Bool requestJumpPermission(List<RefereeService> refs) {
+		Int per = 0;
+		Bool finish = False;
+		referees = refs;
+      
+        	Int i = 0;
+       		 while ( i<length(refs) ) {
+         		 RefereeService r = nth(refs, i);
+         		 Fut<Bool> p = r!grantJumpPermission(this);
+         		 await p?;
+          
+          		Bool pb = p.get;
+          		if(pb) {
+             			per = per + 1;
+          		}
+         		 i = i + 1;
+        	}
+		
+		permitted = per == 5;
+	 	return permitted;
+	}
+	
+	Bool jump() {
+     		 Bool returnValue = False;
+			if (permitted) {
+				permitted = False;
+				returnValue = True; 
+		        }
+		return returnValue;
+	}
+	
+	Unit receiveGrade(Int rid, Int g) {
+        
+    	     	received_grades = received_grades + 1;
+		grade = grade + g;       
+	}
+	
+	Int cheers() {
+	        Int returnValue = -1;
+		if(received_grades == 5) {
+			returnValue = grade;
+			received_grades = 0;
+			grade = 0;
+		}
+		return returnValue;
+	}
+}
+
+
+
+{  
+	  RefereeService r1 = new RefereeImpl();
+	  RefereeService r2 = new RefereeImpl();
+	  RefereeService r3 = new RefereeImpl();
+	  RefereeService r4 = new RefereeImpl();
+	  RefereeService r5 = new RefereeImpl();
+	  
+	  r1.init(1);
+	  r2.init(2);
+	  r3.init(3);
+	  r4.init(4);
+	  r5.init(5);
+	  
+	  List<RefereeService> refs = list[r1, r2, r3, r4, r5];
+	  
+	  AthleteService a1 = new AthleteImpl();
+	  AthleteService a2 = new AthleteImpl();
+	  
+	  Fut<Bool> permission = a1!requestJumpPermission(refs);
+	  await permission?;
+	  
+	  Fut<Bool> jumped = a1!jump();
+	  await jumped?;
+	  
+	  Fut<Int> f1 = r1!giveFeedback();
+	  Fut<Int> f2 = r2!giveFeedback();
+	  Fut<Int> f3 = r3!giveFeedback();
+	  Fut<Int> f4 = r4!giveFeedback();
+	  Fut<Int> f5 = r5!giveFeedback();
+	  
+	  await f1? & f2? & f3? & f4? & f5?;
+	  
+	  Int grade = a1.cheers();
+	  println("cheers!");
+	  println("your grade: "+ toString(grade));
+}	

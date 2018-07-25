@@ -1,0 +1,162 @@
+interface Station extends TrackElement {
+        
+        Bool register(Train tr);
+
+	Unit anbieten(Train tr, Station fr);
+        Unit annehmen(Train tr);
+        Unit rueckmeldung();
+	Unit askDriveOut(Train tr, Int dir);
+//	Bool gegenfahrschutz(Station from);
+	[Atomic] Int getID();
+}
+
+
+class StationImpl(Int id, Int size) implements Station {
+	
+	Int nTrains = 0;
+	Train train = null;
+	TrackElement track = null;
+
+	List<TrackElement> pre = Nil;
+	List<Station> stations = Nil;
+	
+	Bool constructed = False;
+	Set<TrackElement> blocked = set[];
+	Map<Station, Train> waitFor = map[];
+	Map<Train, Int> trainDriveOut = map[];
+
+	Bool register(Train tr) {
+		Bool retVal = False;
+		if (nTrains < size) {
+			nTrains = nTrains + 1;
+			retVal = True;
+		}
+
+		return retVal;
+	}
+
+
+/*
+	Bool gegenfahrschutz(Station from) {
+		Bool retVal = False;
+		if (!contains(blocked, from)) {
+			retVal = True;
+			blocked = insertElement(blocked, from);
+		}
+		return retVal;
+	}*/
+
+	Unit anbieten(Train tr, Station fr) {
+		println("anbieten");
+		if (!contains(blocked, fr)) {
+			// gegenfahrschutz
+			blocked = insertElement(blocked, fr);
+			println("gegenfahrschutz activated");
+
+			//auf zug tr warten
+			Pair<Station, Train> p = Pair(fr, tr);	
+			waitFor = insert(waitFor, p);
+			println("send annehmen to ");
+			
+			fr!annehmen(tr);
+		}
+	}
+
+	Unit annehmen(Train tr) {
+		println("annehmen");
+		Maybe<Int> dir = lookup(trainDriveOut, tr);		
+		if (isJust(dir)) {
+			TrackElement t = nth(pre, fromJust(dir));
+			t.registerAusfahrt(tr);
+			tr.setNext(nth(pre, fromJust(dir)));	
+			tr.drive_out();
+			t!forceSignal(0, GREEN);
+		}
+	}
+
+	Unit rueckmeldung() {
+
+	}
+
+	Unit askDriveOut(Train tr, Int dir) {
+		await this.constructed;
+		print("ask drive out");
+		Pair<Train, Int> p = Pair(tr, dir);
+		trainDriveOut = insert(trainDriveOut, p);
+		nth(stations, dir)!anbieten(tr, this);
+	
+		//await !anbieten(tr, this); ...	
+	}
+
+	[Atomic] Int getID(){
+		return id;
+	}
+
+
+	
+	[Atomic]Bool construct(List<TrackElement> pre, List<Station> stations) {
+		if (!this.constructed && length(pre) == length(stations)) {
+
+			track = new TrackElementStation();
+			this.stations = stations;
+			Int i = 0;
+			while (i < length(pre)) {
+				TrackElement t = new TrackElementPreStation();
+				t.construct(Cons(this, Cons(nth(pre, i), Nil)), Cons(this, Nil));
+				
+				TrackElement pt = nth(pre, i);
+				pt.forceSet(t, -1);
+				
+				List<TrackElement> lot = Cons(t, Nil);
+				this.pre = concatenate(this.pre, lot);
+				i = i + 1;
+			}
+		
+			track.construct(pre, Nil);	
+
+			this.constructed = True;
+		}
+		return True;
+	}
+	
+
+
+	[Atomic] Unit forceSet(TrackElement t, Int id) {
+
+	}
+
+	[Atomic]Unit registerAusfahrt(Train tr) {
+        	this.track.registerAusfahrt(tr);
+	}
+
+	[Atomic] Unit registerTrain(Train tr, TrackElement p) {
+		this.track.registerTrain(tr, p);
+	}
+
+        Unit forceSignal(Int id, Sig s) {
+                this.track!forceSignal(id, s);
+        }
+
+
+	[Atomic]Ttype getType() {
+		return Station;
+	}
+	
+	Bool occupy(Train tr, TrackElement p) {
+		print("test asdasd");
+		Bool retVal = False;
+		Maybe<Int> dir = lookup(trainDriveOut, tr);	
+		println("station occupy");	
+		if (isJust(dir)) {	
+			tr.setNext(nth(pre, fromJust(dir)));	
+			println("station track occupied");
+			retVal = True;
+		}
+		return retVal;
+	}
+
+	[Atomic]Bool status(Stat s) {
+		return track.status(s);
+	}
+
+}

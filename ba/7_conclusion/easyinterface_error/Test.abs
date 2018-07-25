@@ -1,0 +1,11 @@
+module Test;
+interface Track {}
+interface Station extends Track {}
+class TrackImpl implements Track {}
+class StationImpl implements Station {}
+{
+	Track t = new TrackImpl();
+	Station s = new StationImpl();
+	List<Track> lof = list[t, s];
+	lof = list[s, t]; //error
+}

@@ -1,0 +1,13 @@
+property {
+
+	define {
+		track1_null = tr1.track == null;
+		track2_null = tr2.track == null;
+		track = tr1.track == tr2.track;	
+	} 	
+	TCTL {
+		Safety : AG(time <= 10, track1_null || track2_null || track);
+	}
+
+}
+
